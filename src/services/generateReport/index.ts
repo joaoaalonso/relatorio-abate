@@ -3,8 +3,8 @@ import { writeBinaryFile } from '@tauri-apps/api/fs'
 
 import swal from 'sweetalert'
 import pdfMake from 'pdfmake/build/pdfmake'
-import * as pdfFonts from 'pdfmake/build/vfs_fonts'
 
+import vfs from './vfs'
 import formatNumber from'./formatNumber'
 import renderDados from './renderDados'
 import renderFetos from './renderFetos'
@@ -96,7 +96,7 @@ export default function(input: any) {
         ]
     }
 
-    pdfMake.vfs = pdfFonts.pdfMake.vfs
+    pdfMake.vfs = vfs
 
     save({
         title: 'Onde deseja salvar o relatório?',
