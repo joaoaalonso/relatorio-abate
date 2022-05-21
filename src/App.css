@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+  -webkit-appearance: none;
+}
+
+.app {
+  display: flex;
+  background-color: #f1f2f5;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.column {
+  flex: 1;
+}
+
+@media screen and (max-width: 800px) {
+  .row {
+    flex-direction: column;
+  }
+}

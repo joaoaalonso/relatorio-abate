@@ -1,0 +1,58 @@
+.custom-table-wrapper {
+    color: #3a3939;
+    overflow: hidden;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+.custom-table-wrapper > .custom-table {
+    flex: 1;
+    height: 80px;
+    overflow: hidden;
+    border-radius: 0 0 3px 3px;
+    border-collapse: collapse;
+    border: 1px solid #e5e5e5;
+    background-color: #e5e5e5;
+}
+
+.custom-table-wrapper > p {
+    margin: 0;
+    width: 100%;
+    padding: 8px 5px;
+    font-size: 12px;
+    background-color: #e5e5e5;
+    border-bottom: 1px solid #c0c0c0;
+}
+
+.custom-table-wrapper > .custom-table th {
+    padding: 2px 5px;
+    font-size: 10px;
+    text-align: left;
+    font-weight: normal;
+    background-color: #e5e5e5;
+}
+
+.custom-table-wrapper > .custom-table tr {
+    background-color: white;
+    border-top: 1px solid #c0c0c0;
+}
+
+.custom-table-wrapper > .custom-table td {
+    padding: 5px;
+    background-color: #f2f2f2;
+}
+
+.custom-table-wrapper > .custom-table td > div {
+    padding: 0;
+}
+
+.custom-table-wrapper > .custom-table svg {
+    cursor: pointer;
+}
+
+.custom-table-wrapper > .custom-table svg:hover {
+    color: #5ea7f8;
+}
+
+.custom-table-wrapper > .custom-table .custom-table-wrapper > .custom-table-title {
+    font-size: 14px;
+}

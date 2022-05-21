@@ -1,0 +1,23 @@
+.button {
+    width: 100%;
+    padding: 5px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid #d9d9d9;
+}
+
+.button-primary {
+    color: black;
+    background-color: white;
+}
+
+.button-secondary {
+    color: white;
+    background-color: #5ea7f8;
+}
+
+.button:hover {
+    color: #5ea7f8;
+    border-color: #5ea7f8;
+}

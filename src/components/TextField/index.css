@@ -1,0 +1,25 @@
+.text-field-container {
+    padding-bottom: 8px;
+}
+
+.text-field-container > .text-field {
+    width: 100%;
+    padding: 5px;
+    font-size: 12px;
+    transition: 0.3s;
+    border: 1px solid #d9d9d9;
+}
+
+.text-field-container > .text-field:focus {
+    border-color: #5ea7f8;
+    outline: none;
+}
+
+.text-field-container > .text-field-error {
+    color: red;
+    border-color: red !important;
+}
+
+.text-field-container > .text-field-label {
+    font-size: 14px;
+}

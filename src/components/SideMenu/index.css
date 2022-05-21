@@ -1,0 +1,70 @@
+.side-menu {
+  width: 200px;
+  height: 100vh;
+  display: flex;
+  transition: 0.3s;
+  position: relative;
+  align-items: center;
+  flex-direction: column;
+  background-color: #051527;
+}
+
+.side-menu > a {
+  width: 100%;
+  display: flex;
+  font-size: 14px;
+  color: #a2a8af;
+  transition: 0.3s;
+  padding: 10px 25px;
+  align-items: center;
+  text-decoration: none;
+}
+
+.side-menu > a:hover {
+  color: white;
+}
+
+.side-menu > img {
+  width: 100%;
+  max-width: 100px;
+}
+
+.side-menu > .active {
+  color: white;
+  background: #3773C8;
+  background: linear-gradient(to right, #3773C8 0%, #448FF7 100%);
+}
+
+.side-menu span {
+  margin-left: 5px;
+}
+
+.side-menu-close {
+  width: 80px;
+}
+
+.side-menu-close a {
+  justify-content: center;
+}
+
+.side-menu-close a {
+  text-align: center;
+}
+
+.side-menu-close span {
+  display: none;
+}
+
+.side-menu > .side-menu-minimize {
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  padding: 10px;
+  color: #a2a8af;
+  cursor: pointer;
+  position: absolute;
+  font-size: 12px;
+  align-items: center;
+  justify-content: center;
+  background-color: #042244;
+}
