@@ -1,14 +1,11 @@
-// const fs = require('fs')
-// const path = require('path')
-// import PdfPrinter from 'pdfmake'
 import { save } from '@tauri-apps/api/dialog'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
-import pdfMake from 'pdfmake/build/pdfmake'
-import pdfFonts from 'pdfmake/build/vfs_fonts'
-import swal from 'sweetalert'
-import CONSTANTS from './constants'
-import formatNumber from'./formatNumber'
 
+import swal from 'sweetalert'
+import pdfMake from 'pdfmake/build/pdfmake'
+import * as pdfFonts from 'pdfmake/build/vfs_fonts'
+
+import formatNumber from'./formatNumber'
 import renderDados from './renderDados'
 import renderFetos from './renderFetos'
 import renderAcerto from './renderAcerto'
