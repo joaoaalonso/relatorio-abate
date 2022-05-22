@@ -6,10 +6,10 @@
 }
 .custom-table-wrapper > .custom-table {
     flex: 1;
-    height: 80px;
+    width: 100%;
     overflow: hidden;
-    border-radius: 0 0 3px 3px;
     border-collapse: collapse;
+    border-radius: 0 0 3px 3px;
     border: 1px solid #e5e5e5;
     background-color: #e5e5e5;
 }

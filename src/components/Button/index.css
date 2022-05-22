@@ -14,10 +14,16 @@
 
 .button-secondary {
     color: white;
+    font-weight: bold;
     background-color: #5ea7f8;
 }
 
 .button:hover {
     color: #5ea7f8;
     border-color: #5ea7f8;
+}
+
+.button-secondary:hover {
+    color: white;
+    background-color: #7fb8f9;
 }

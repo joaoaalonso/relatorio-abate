@@ -4,6 +4,8 @@ import './index.css'
 interface TextFieldProps {
     errors?: any;
     name?: string;
+    type?: string;
+    step?: string;
     value?: string;
     label?: string;
     register?: any;
@@ -12,7 +14,7 @@ interface TextFieldProps {
     onChange?: (value: string) => void;
 }
 
-function TextField({ value, name, label, errors, placeholder, register, onChange, required = false }: TextFieldProps) {
+function TextField({ value, name, label, errors, placeholder, register, onChange, step, type = 'text', required = false }: TextFieldProps) {
     function handleRegister() {
         if (register && name) {
             return register(name, { required })
@@ -28,13 +30,18 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
 
     const hasError = errors && name && !!errors[name]
 
+    const Tag = type == 'textarea' ? 'textarea' : 'input'
+
     return (
         <div className='text-field-container'>
             {!!label && 
                 <label className='text-field-label'>{label}{required ? '*' : ''}</label>
             }
-            <input
+            <Tag
+                rows={3}
+                type={type}
                 value={value}
+                step={step}
                 className={`text-field ${hasError ? 'text-field-error' : ''}`}
                 placeholder={placeholder}
                 onChange={handleOnChage}

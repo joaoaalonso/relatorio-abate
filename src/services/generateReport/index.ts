@@ -9,12 +9,13 @@ import formatNumber from'./formatNumber'
 import renderDados from './renderDados'
 import renderFetos from './renderFetos'
 import renderAcerto from './renderAcerto'
+import renderPhotos from './renderPhotos'
 import renderValorMedia from './renderValorMedia'
 import renderAssinatura from './renderAssinatura'
 import renderAvaliacaoAbate from './renderAvaliacaoAbate'
 import renderPesoRendimento from './renderPesoRendimento'
 
-export default function(input: any) {
+export default async function(input: any): Promise<void> {
     const docDefinitions: any = {
         pageSize: 'A4',
         defaultStyle: {
@@ -92,28 +93,33 @@ export default function(input: any) {
             renderAcerto(input),
             {text: '\n'},
             {text: '\n'},
-            renderAssinatura(input)
+            renderAssinatura(input),
+            renderPhotos(input)
         ]
     }
 
     pdfMake.vfs = vfs
 
-    save({
-        title: 'Onde deseja salvar o relatório?',
-        defaultPath: 'Relatório Final.pdf',
-        filters: [{name: 'PDF', extensions: ['pdf']}]
-    })
-    .then(path => {
-        pdfMake
-            .createPdf(docDefinitions)
-            .getBuffer(buffer => {
-                writeBinaryFile({ contents: buffer, path })
-                .then(() => {
-                    swal('', 'Relatório salvo com sucesso!', 'success')
-                })
+    return new Promise((resolve) => {
+        save({
+            title: 'Onde deseja salvar o relatório?',
+            defaultPath: `${input.proprietario.toLowerCase()} ${input.data.replaceAll('/', '-')} ${input.sexo}.pdf`,
+            filters: [{name: 'PDF', extensions: ['pdf']}]
         })
-    })
-    .catch(e => {
-        swal('', 'Ocorreu um erro ao salvar o relatório', 'error')
+        .then(path => {
+            if (!path) resolve()
+            pdfMake
+                .createPdf(docDefinitions)
+                .getBuffer(buffer => {
+                    writeBinaryFile({ contents: buffer, path })
+                    .then(() => {
+                        swal('', 'Relatório gerado com sucesso!', 'success')
+                        resolve()
+                    })
+            })
+        })
+        .catch(e => {
+            swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
+        })
     })
 }

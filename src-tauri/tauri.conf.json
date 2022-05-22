@@ -7,12 +7,19 @@
     "distDir": "../dist"
   },
   "package": {
-    "productName": "tauri-app",
+    "productName": "Relatório de abate",
     "version": "0.1.0"
   },
   "tauri": {
     "allowlist": {
-      "all": true
+      "all": false,
+      "fs": {
+        "writeFile": true
+      },
+      "dialog": {
+        "open": true,
+        "save": true
+      }
     },
     "bundle": {
       "active": true,
@@ -44,7 +51,10 @@
       "windows": {
         "certificateThumbprint": null,
         "digestAlgorithm": "sha256",
-        "timestampUrl": ""
+        "timestampUrl": "",
+        "wix": {
+          "language": "pt-BR"
+        }
       }
     },
     "security": {

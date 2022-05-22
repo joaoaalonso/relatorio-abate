@@ -15,10 +15,13 @@ export default function (input: any) {
 
     let valorPremiacoes = 0
     const premiacoes: any[] = []
-    // Object.keys(input.premiacoes).forEach(key => {
-    //     valorPremiacoes += input.premiacoes[key]
-    //     premiacoes.push(`${key.toUpperCase()}: R$ ${formatNumber(input.premiacoes[key])}`)
-    // })
+    input.premiacoes.forEach((premiacao: any) => {
+        if(!!premiacao.type && !!premiacao.value) {
+            const value = parseFloat(premiacao.value)
+            valorPremiacoes += value
+            premiacoes.push(`${premiacao.type.toUpperCase()}: R$ ${formatNumber(value)}`) 
+        }
+    })
     const valorLiquido = valorBruto - desconto + valorPremiacoes
 
     return {

@@ -5,6 +5,7 @@
 .text-field-container > .text-field {
     width: 100%;
     padding: 5px;
+    resize: none;
     font-size: 12px;
     transition: 0.3s;
     border: 1px solid #d9d9d9;

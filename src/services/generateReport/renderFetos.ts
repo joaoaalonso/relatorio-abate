@@ -7,10 +7,15 @@ export default function(input: any) {
     let pesoTotalFetos = 0
     const descricaoFetos: any[] = []
     input.fetos.forEach((fetos: any) => {
-        const type: 'P' | 'M' | 'G' = fetos.type
-        pesoTotalFetos += CONSTANTS.PESO_FETO[type] * fetos.value
-        descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${CONSTANTS.IDADE_FETO[type]} COM MÉDIA DE ${CONSTANTS.IDADE_FETO[type]} KG`)
+        if (!!fetos.type && !!fetos.value) {
+            const type: 'P' | 'M' | 'G' = fetos.type
+            pesoTotalFetos += CONSTANTS.PESO_FETO[type] * fetos.value
+            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${CONSTANTS.IDADE_FETO[type]} COM MÉDIA DE ${CONSTANTS.PESO_FETO[type]} KG`)
+        }
     })
+    
+    if (!pesoTotalFetos) return null
+
     const pesoMedioFeto = pesoTotalFetos/input.numeroAnimais
     const RCAjustado = (input.PC/(input.PV - pesoMedioFeto))*100
     const PVAjustado = (input.PV - pesoMedioFeto)

@@ -5,12 +5,13 @@
 
 .app {
   display: flex;
+  height: 100vh;
   background-color: #f1f2f5;
 }
 
 .row {
-  display: flex;
   gap: 10px;
+  display: flex;
 }
 
 .column {
@@ -21,4 +22,13 @@
   .row {
     flex-direction: column;
   }
+}
+
+.swal-modal {
+  border-radius: 0;
+}
+
+.swal-button {
+  border-radius: none;
+  background-color: #5ea7f8; 
 }

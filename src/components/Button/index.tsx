@@ -17,8 +17,9 @@ function Button({text, variant = 'primary', type = 'button', onClick}: ButtonPro
     return (
         <button
             type={type}
-            onChange={handleOnClick}
+            onClick={handleOnClick}
             className={`button button-${variant}`}
+            formNoValidate
         >
             {text}
         </button>

@@ -1,7 +1,7 @@
 import CONSTANTS from './constants'
 import formatNumber from './formatNumber'
 
-function renderTable (label: string, input: any, inputKey: string) {
+function renderTableWithPercentage (label: string, input: any, inputKey: string) {
     const rows: any[] = []
     input[inputKey].forEach((obj: any) => {
         const percentil = (obj.value / input.numeroAnimais)*100
@@ -22,6 +22,36 @@ function renderTable (label: string, input: any, inputKey: string) {
     }
 }
 
+function renderSeqTable (label: string, input: any, inputKey: string, titles: string[]) {
+    if(!input[inputKey].filter((a: any) => !!a.seq).length) return null
+
+    const rows: any[] = []
+    input[inputKey].forEach((obj: any) => {
+        if (!!obj.seq) {
+            rows.push([
+                { text: obj.seq, alignment: 'center' }, 
+                { text: obj.type.toUpperCase(), alignment: 'center' }, 
+                { text: obj.value.toUpperCase(), alignment: 'center' }, 
+            ])
+        }
+    })
+    return {
+        width: '*',
+        table: {
+            widths: ['*', '*', '*'],
+            body: [
+                [ { text: label, alignment: 'center', colSpan: 3 }, {}, {} ],
+                [ 
+                    { text: 'SEQ', alignment: 'center' }, 
+                    { text: titles[0], alignment: 'center' },
+                    { text: titles[1], alignment: 'center' }
+                ],
+                ...rows
+            ]
+        }
+    }
+}
+
 function renderFetoEVacina(input: any) {
     const valorKg = input.valorArroba ? input.valorArroba/CONSTANTS.ARROBA : null
     const valorVacina = valorKg ? input.pesoVacina * valorKg : null
@@ -32,7 +62,7 @@ function renderFetoEVacina(input: any) {
             {
                 stack: [
                     `${formatNumber(input.pesoVacina, 3)} KG/CBÇ`,
-                    `(R$ ${formatNumber(valorVacina)})`,
+                    `(R$ ${valorVacina ? formatNumber(valorVacina) : ''})`,
                 ],
                 alignment: 'center'
             }
@@ -44,11 +74,17 @@ function renderFetoEVacina(input: any) {
         const arrayFetos: any[] = []
         if (input.sexo == 'F') {
             input.fetos.forEach((fetos: any) => {
-                totalFetos += fetos.value
-                arrayFetos.push(`${fetos.value}${fetos.type}`)
+                if (!!fetos.type && !!fetos.value) {
+                    totalFetos += parseInt(fetos.value)
+                    arrayFetos.push(`${fetos.value}${fetos.type}`)
+                }
             })
         }
-        body.unshift([ { text: `${totalFetos} FETOS: ${arrayFetos.join('/')}\n\n`, alignment: 'center' } ])
+        let totalFetosString = 'NENHUM FETO\n\n'
+        if (totalFetos > 0) {
+            totalFetosString = `${totalFetos} FETOS: ${arrayFetos.join('/')}\n\n`
+        }
+        body.unshift([ { text: totalFetosString, alignment: 'center' } ])
         body.unshift([ { text: 'FETOS', alignment: 'center' } ])
     }
 
@@ -63,13 +99,24 @@ function renderFetoEVacina(input: any) {
 
 export default function(input: any) {
     return {
-        columns: [
-            renderTable('MATURIDADE', input, 'maturidade'),
-            renderTable('ACABAMENTO', input, 'acabamento'),
-            renderTable('ESCORE RUMINAL', input, 'escoreRuminal'),
-            renderFetoEVacina(input)
+        stack: [
+            {
+                columns: [
+                    renderTableWithPercentage('MATURIDADE', input, 'maturidade'),
+                    renderTableWithPercentage('ACABAMENTO', input, 'acabamento'),
+                    renderTableWithPercentage('ESCORE RUMINAL', input, 'escoreRuminal'),
+                    renderFetoEVacina(input)
+                ],
+                columnGap: 10
+            },
+            {
+                columns: [
+                    renderSeqTable('DIF', input, 'dif', ['MOTIVO', 'DESTINO']),
+                    renderSeqTable('HEMATOMA', input, 'hematomas', ['LOCAL', 'ORIGEM']),
+                ],
+                columnGap: 10
+            }
         ],
         colSpan: 4,
-        columnGap: 10
     }
 }
