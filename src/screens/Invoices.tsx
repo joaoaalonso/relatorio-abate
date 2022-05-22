@@ -1,7 +1,9 @@
+import swal from 'sweetalert'
 import formatDate from 'date-fns/format'
 import ptBr from 'date-fns/locale/pt-BR'
 import { useForm } from 'react-hook-form'
 import { useState, useEffect } from 'react'
+import { save } from '@tauri-apps/api/dialog'
 import { BiPlus, BiTrash } from 'react-icons/bi'
 
 import Table from '../components/Table'
@@ -14,7 +16,7 @@ import DatePicker from '../components/DatePicker'
 import ScreenTemplate from '../components/ScreenTemplate'
 
 import generateReport from '../services/generateReport'
-import swal from 'sweetalert'
+import { getAvaliableFetalSizes, getDiscountNames } from '../services/configs'
 
 function Invoices() {
     const [loading, setLoading] = useState(false)
@@ -54,7 +56,7 @@ function Invoices() {
     }
 
     function onSubmit(data: any) {
-        const newData = {
+        const input = {
             ...data,
             data: formatDate(data.data, 'dd/MM/yyyy', { locale: ptBr }),
             dataCriacao: formatDate(data.dataCriacao, 'dd/MM/yyyy', { locale: ptBr }),
@@ -74,11 +76,25 @@ function Invoices() {
             premiacoes
         }
         
-        setLoading(true)
-        generateReport(newData)
-            .finally(() => {
-                setLoading(false)
-            })
+        save({
+            title: 'Onde deseja salvar o relatório?',
+            defaultPath: `${input.proprietario.toLowerCase()} ${input.data.replaceAll('/', '-')} ${input.sexo}.pdf`,
+            filters: [{name: 'PDF', extensions: ['pdf']}]
+        })
+        .then(path => {
+            if (!path) return false
+            setLoading(true)
+            return generateReport(input, path)
+        })
+        .then(success => {
+            success && swal('', 'Relatório gerado com sucesso!', 'success')
+        })
+        .catch(e => {
+            swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
+        })
+        .finally(() => {
+            setLoading(false)
+        })
     }
 
     function resetForm() {
@@ -206,10 +222,16 @@ function Invoices() {
                             ]} required />
                         </div>
                         <div className='column'>
-                            <Select label='Desconto' name='desconto' register={register} errors={errors} options={[
-                                {value: 'funrural', text: 'Funrural'},
-                                {value: 'senar', text: 'Senar'}
-                            ]} required />
+                            <Select 
+                                label='Desconto' 
+                                name='desconto' 
+                                register={register} 
+                                errors={errors} 
+                                options={getDiscountNames().map(discount => {
+                                    return { value: discount, text: discount }
+                                })} 
+                                required 
+                            />
                         </div>
                         <div className='column'>
                             <TextField name='pesoVacina' label='Peso da vacina' type='number' step='0.01' register={register} errors={errors} required />
@@ -364,7 +386,15 @@ function Invoices() {
                                     {fetos.map((elem, index) => {
                                         return (
                                             <tr key={`fetos-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(fetos, setFetos, index, 'type', value)} value={elem.type} /></td>
+                                                <td><Select  
+                                                    name='desconto' 
+                                                    register={register} 
+                                                    errors={errors} 
+                                                    required 
+                                                    options={getAvaliableFetalSizes().map(weight => {
+                                                        return { value: weight, text: weight }
+                                                    })} 
+                                                /></td>
                                                 <td><TextField onChange={(value) => updateTableRow(fetos, setFetos, index, 'value', value)} value={elem.value} /></td>
                                                 <td><BiTrash onClick={() => removeTableRow(fetos, setFetos, index)} /></td>
                                             </tr>

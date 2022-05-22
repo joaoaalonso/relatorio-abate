@@ -1,5 +1,5 @@
-import CONSTANTS from './constants'
 import formatNumber from './formatNumber'
+import { getFetalAge, getFetalWeight } from '../configs'
 
 export default function(input: any) {
     if (input.sexo != 'F' || Object.keys(input.fetos).length == 0) return null
@@ -9,8 +9,8 @@ export default function(input: any) {
     input.fetos.forEach((fetos: any) => {
         if (!!fetos.type && !!fetos.value) {
             const type: 'P' | 'M' | 'G' = fetos.type
-            pesoTotalFetos += CONSTANTS.PESO_FETO[type] * fetos.value
-            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${CONSTANTS.IDADE_FETO[type]} COM MÉDIA DE ${CONSTANTS.PESO_FETO[type]} KG`)
+            pesoTotalFetos += getFetalWeight(type) * fetos.value
+            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${getFetalAge(type)} COM MÉDIA DE ${getFetalWeight(type)} KG`)
         }
     })
     

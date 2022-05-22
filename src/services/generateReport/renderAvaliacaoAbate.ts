@@ -1,4 +1,4 @@
-import CONSTANTS from './constants'
+import { getArroba } from '../configs'
 import formatNumber from './formatNumber'
 
 function renderTableWithPercentage (label: string, input: any, inputKey: string) {
@@ -53,7 +53,7 @@ function renderSeqTable (label: string, input: any, inputKey: string, titles: st
 }
 
 function renderFetoEVacina(input: any) {
-    const valorKg = input.valorArroba ? input.valorArroba/CONSTANTS.ARROBA : null
+    const valorKg = input.valorArroba ? input.valorArroba/getArroba() : null
     const valorVacina = valorKg ? input.pesoVacina * valorKg : null
 
     const body = [

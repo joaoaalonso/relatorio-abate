@@ -1,8 +1,8 @@
-import CONSTANTS from './constants'
+import { getArroba } from '../configs'
 import formatNumber from './formatNumber'
 
 export default function (input: any) {
-    const mediaLote = input.PC / CONSTANTS.ARROBA
+    const mediaLote = input.PC / getArroba()
     
     let value = input.valorArroba ? formatNumber(input.valorArroba) : ''
     if (input.adicionalPrecoce && value) {

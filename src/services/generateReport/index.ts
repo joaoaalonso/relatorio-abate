@@ -1,8 +1,5 @@
-import { save } from '@tauri-apps/api/dialog'
-import { writeBinaryFile } from '@tauri-apps/api/fs'
-
-import swal from 'sweetalert'
 import pdfMake from 'pdfmake/build/pdfmake'
+import { writeBinaryFile } from '@tauri-apps/api/fs'
 
 import vfs from './vfs'
 import formatNumber from'./formatNumber'
@@ -15,7 +12,7 @@ import renderAssinatura from './renderAssinatura'
 import renderAvaliacaoAbate from './renderAvaliacaoAbate'
 import renderPesoRendimento from './renderPesoRendimento'
 
-export default async function(input: any): Promise<void> {
+export default async function(input: any, path: string): Promise<boolean> {
     const docDefinitions: any = {
         pageSize: 'A4',
         defaultStyle: {
@@ -99,27 +96,14 @@ export default async function(input: any): Promise<void> {
     }
 
     pdfMake.vfs = vfs
-
     return new Promise((resolve) => {
-        save({
-            title: 'Onde deseja salvar o relatório?',
-            defaultPath: `${input.proprietario.toLowerCase()} ${input.data.replaceAll('/', '-')} ${input.sexo}.pdf`,
-            filters: [{name: 'PDF', extensions: ['pdf']}]
-        })
-        .then(path => {
-            if (!path) resolve()
-            pdfMake
-                .createPdf(docDefinitions)
-                .getBuffer(buffer => {
-                    writeBinaryFile({ contents: buffer, path })
-                    .then(() => {
-                        swal('', 'Relatório gerado com sucesso!', 'success')
-                        resolve()
-                    })
-            })
-        })
-        .catch(e => {
-            swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
+        pdfMake
+            .createPdf(docDefinitions)
+            .getBuffer(buffer => {
+                writeBinaryFile({ contents: buffer, path })
+                .then(() => {
+                    resolve(true)
+                })
         })
     })
 }

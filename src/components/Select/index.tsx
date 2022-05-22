@@ -6,16 +6,17 @@ interface Options {
     value: string;
 }
 
-interface SelectProps extends InputHTMLAttributes<HTMLSelectElement> {
+interface SelectProps {
     errors?: any;
-    name: string;
+    name?: string;
     label?: string;
     register?: any;
     options: Options[];
     required?: boolean;
+    onChange?: (value: string) => void;
 }
 
-function Select({ name, label, errors, options, register, required = false }: SelectProps) {
+function Select({ name, label, errors, options, register, onChange, required = false }: SelectProps) {
     function handleRegister() {
         if (register && name) {
             return register(name, { required })
@@ -23,7 +24,13 @@ function Select({ name, label, errors, options, register, required = false }: Se
         return {}
     }
 
-    const hasError = errors && !!errors[name]
+    function handleOnChage(e: any) {
+        if (onChange) {
+            onChange(e.target.value)
+        }
+    }
+
+    const hasError = errors && name && !!errors[name]
 
     return (
         <div className='select-container'>
@@ -33,6 +40,7 @@ function Select({ name, label, errors, options, register, required = false }: Se
              <select
                 id={`select-${name}`} 
                 className={`select ${hasError ? 'select-error' : ''}`}
+                onChange={handleOnChage}
                 {...handleRegister()}
              >
                 {options.map(option => {
