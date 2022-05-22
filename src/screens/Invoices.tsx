@@ -13,10 +13,10 @@ import Photos from '../components/Photos'
 import Loading from '../components/Loading'
 import TextField from '../components/TextField'
 import DatePicker from '../components/DatePicker'
+import { getSettings } from '../services/settings'
 import ScreenTemplate from '../components/ScreenTemplate'
 
 import generateReport from '../services/generateReport'
-import { getAvaliableFetalSizes, getDiscountNames } from '../services/configs'
 
 function Invoices() {
     const [loading, setLoading] = useState(false)
@@ -32,6 +32,9 @@ function Invoices() {
     const [hematomas, setHematomas] = useState<any[]>([{ seq: '', type: '', value: '' }])
 
     const [fotos, setFotos] = useState<string[]>([])
+
+    const [discounts, setDiscounts] = useState<string[]>([])
+    const [fetalSizes, setFetalSizes] = useState<string[]>([])
     
     const {
         register,
@@ -50,6 +53,14 @@ function Invoices() {
     useEffect(() => {
         setIsFemale(watchSex[0] === 'F')
     }, [watchSex])
+
+    useEffect(() => {
+        getSettings()
+            .then(settings => {
+                setDiscounts(settings.discounts.map(d => d.name))
+                setFetalSizes(Object.keys(settings.fetalAges))
+            })
+    }, [])
 
     function parseNumber(number: string) {
         return parseFloat(number.replace(',', '.'))
@@ -227,7 +238,7 @@ function Invoices() {
                                 name='desconto' 
                                 register={register} 
                                 errors={errors} 
-                                options={getDiscountNames().map(discount => {
+                                options={discounts.map(discount => {
                                     return { value: discount, text: discount }
                                 })} 
                                 required 
@@ -391,8 +402,8 @@ function Invoices() {
                                                     register={register} 
                                                     errors={errors} 
                                                     required 
-                                                    options={getAvaliableFetalSizes().map(weight => {
-                                                        return { value: weight, text: weight }
+                                                    options={fetalSizes.map(size => {
+                                                        return { value: size, text: size }
                                                     })} 
                                                 /></td>
                                                 <td><TextField onChange={(value) => updateTableRow(fetos, setFetos, index, 'value', value)} value={elem.value} /></td>

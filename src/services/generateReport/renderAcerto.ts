@@ -1,12 +1,13 @@
 import formatNumber from './formatNumber'
-import { getArroba, getDiscountValue } from '../configs'
+import { getSettings } from '../settings'
 
-export default function (input: any) {
+export default async function (input: any) {
     if (!input.valorArroba) return null
+    const settings = await getSettings()
 
-    const mediaLote = input.PC / getArroba()
+    const mediaLote = input.PC / settings.arroba
     const valorBruto = input.valorArroba * input.numeroAnimais * mediaLote
-    const porcentagemDesconto = getDiscountValue(input.desconto)
+    const porcentagemDesconto = settings.discounts[input.desconto].value
     const desconto = valorBruto * porcentagemDesconto
 
     const textoPorcentagemDesconto = `${formatNumber(porcentagemDesconto * 100, 1)}%`

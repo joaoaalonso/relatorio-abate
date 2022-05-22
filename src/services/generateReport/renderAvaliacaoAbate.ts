@@ -1,4 +1,4 @@
-import { getArroba } from '../configs'
+import { getSettings } from '../settings'
 import formatNumber from './formatNumber'
 
 function renderTableWithPercentage (label: string, input: any, inputKey: string) {
@@ -52,8 +52,9 @@ function renderSeqTable (label: string, input: any, inputKey: string, titles: st
     }
 }
 
-function renderFetoEVacina(input: any) {
-    const valorKg = input.valorArroba ? input.valorArroba/getArroba() : null
+async function renderFetoEVacina(input: any) {
+    const settings = await getSettings()
+    const valorKg = input.valorArroba ? input.valorArroba/settings.arroba : null
     const valorVacina = valorKg ? input.pesoVacina * valorKg : null
 
     const body = [
@@ -97,7 +98,7 @@ function renderFetoEVacina(input: any) {
     }
 }
 
-export default function(input: any) {
+export default async function(input: any) {
     return {
         stack: [
             {
@@ -105,7 +106,7 @@ export default function(input: any) {
                     renderTableWithPercentage('MATURIDADE', input, 'maturidade'),
                     renderTableWithPercentage('ACABAMENTO', input, 'acabamento'),
                     renderTableWithPercentage('ESCORE RUMINAL', input, 'escoreRuminal'),
-                    renderFetoEVacina(input)
+                    await renderFetoEVacina(input)
                 ],
                 columnGap: 10
             },

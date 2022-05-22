@@ -50,7 +50,7 @@ export default async function(input: any, path: string): Promise<boolean> {
                         ],
                         [
                             renderDados(input), {},
-                            renderValorMedia(input), {}
+                            await renderValorMedia(input), {}
                         ],
                         [
                             { text: 'AVALIAÇÃO DO CURRAL', alignment: 'center', colSpan: 2 }, {},
@@ -64,7 +64,7 @@ export default async function(input: any, path: string): Promise<boolean> {
                             { text: 'AVALIAÇÃO DO ABATE', alignment: 'center', colSpan: 4 }, {}, {}, {}
                         ],
                         [
-                            renderAvaliacaoAbate(input), {}, {}, {}
+                            await renderAvaliacaoAbate(input), {}, {}, {}
                         ]
                     ]
                 }
@@ -84,10 +84,10 @@ export default async function(input: any, path: string): Promise<boolean> {
                 }
             },
             {text: '\n'},
-            renderFetos(input),
+            await renderFetos(input),
             {text: '\n'},
             {text: '\n'},
-            renderAcerto(input),
+            await renderAcerto(input),
             {text: '\n'},
             {text: '\n'},
             renderAssinatura(input),

@@ -1,46 +1,82 @@
-import { useState } from 'react'
+import swal from 'sweetalert'
+import { useState, useEffect } from 'react'
 import { BiPlus, BiTrash } from 'react-icons/bi'
 
 import Table from '../components/Table'
+import Button from '../components/Button'
 import TextField from '../components/TextField'
 import ScreenTemplate from '../components/ScreenTemplate'
-import { getAvaliableFetalSizes, getDiscounts, getFetalAges, getFetalWeights } from '../services/configs'
-import Button from '../components/Button'
+import { getSettings, SettingsInterface, updateSettings } from '../services/settings'
 
 function Settings() {
-    const [discounts, setDiscounts] = useState(getDiscounts())
-    const [fetalAge, setFetalAge] = useState<any>(getFetalAges())
-    const [fetalWeight, setFetalWeight] = useState<any>(getFetalWeights())
+    const [settings, setSettings] = useState<SettingsInterface>()
 
-    const fetalSizes = getAvaliableFetalSizes()
+    useEffect(() => {
+        getSettings().then(settings => {
+            setSettings({
+                ...settings,
+                discounts: settings.discounts.map(discount => ({
+                    name: discount.name,
+                    value: discount.value * 100,
+                }))
+            })
+        })
+    }, [])
 
     function addDiscount() {
-        setDiscounts([...discounts, { name: '', value: 0 }])
+        if (!settings) return
+        const discounts = settings.discounts
+        discounts.push({ name: '', value: 0 })
+        setSettings({ ...settings, discounts })
     }
 
     function removeDiscount(index: number) {
-        let newDiscounts = discounts.filter((_, i) => i !== index)
-        if (!newDiscounts.length) {
-            newDiscounts = [{ name: '', value: 0 }]
+        if (!settings) return
+        let discounts = settings.discounts.filter((_, i) => i !== index)
+        if (!discounts.length) {
+            discounts = [{ name: '', value: 0 }]
         }
-        setDiscounts(newDiscounts)
+        setSettings({ ...settings, discounts })
+    }
+
+    function updateFetalWeight(size: string, value: string) {
+        if (!settings) return
+        const fetalWeights = settings.fetalWeights
+        fetalWeights[size] = parseFloat(value) || 0
+        setSettings({ ...settings, fetalWeights })
+    }
+
+    function updateFetalAge(size: string, value: string) {
+        if (!settings) return
+        const fetalAges = settings.fetalAges
+        fetalAges[size] = value
+        setSettings({ ...settings, fetalAges })
+    }
+
+    function updateDiscount(index: number, field: string, value: string) {
+        if (!settings) return
+        const discounts: any = settings.discounts
+        discounts[index][field] = value
+        setSettings({ ...settings, discounts })
+    }
+    
+    function handleSubmit() {
+        if(!settings) return
+        const discounts = settings.discounts.map(discount => ({ name: discount.name, value: discount.value / 100 }))
+        updateSettings({ ...settings, discounts })
+            .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
+            .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
+    }
+
+    if (!settings) {
+        return (
+            <div>Carregando...</div>
+        )
     }
 
     return (
         <ScreenTemplate title='Configurações'>
             <>
-                {/* <p>Descontos:</p>
-                {Object.keys(discounts).map(key => {
-                    return <p key={key}>- {key}: {discounts[key]*100}%</p>
-                })}
-                <p>Peso fetal:</p>
-                {Object.keys(fetalWeight).map(key => {
-                    return <p key={key}>- {key}: {fetalWeight[key]}Kg</p>
-                })}
-                <p>Idade fetal:</p>
-                {Object.keys(fetalAge).map(key => {
-                    return <p key={key}>- {key}: {fetalAge[key]}</p>
-                })} */}
                 <div className='row' style={{ justifyContent: 'center' }}>
                     <Table title='Fetos'>
                         <>
@@ -52,15 +88,12 @@ function Settings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {fetalSizes.map(size => {
+                                {(Object.keys(settings.fetalAges)).map(size => {
                                     return (
                                         <tr key={`fetal-${size}`}>
                                             <td>{size}</td>
-                                            <td><TextField value={fetalWeight[size]} /></td>
-                                            <td><TextField value={fetalAge[size]} /></td>
-                                            {/* <td><TextField onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'type', value)} value={elem.type} /></td> */}
-                                            {/* <td><TextField type='number' step='0.01' onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'value', value)} value={elem.value} /></td> */}
-                                            {/* <td><BiTrash onClick={() => removeTableRow(premiacoes, setPremiacoes, index)} /></td> */}
+                                            <td><TextField value={settings.fetalWeights[size].toString()} onChange={val => updateFetalWeight(size, val)} /></td>
+                                            <td><TextField value={settings.fetalAges[size]} onChange={val => updateFetalAge(size, val)} /></td>
                                         </tr>
                                     )
                                 })}
@@ -78,11 +111,11 @@ function Settings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {discounts.map((discount, index) => {
+                                {settings?.discounts.map((discount, index) => {
                                     return (
                                         <tr key={`discount-${index}`}>
-                                            <td><TextField value={discount.name} /></td>
-                                            <td><TextField value={discount.value.toString()} /></td>
+                                            <td><TextField value={discount.name} onChange={val => updateDiscount(index, 'name', val)} /></td>
+                                            <td><TextField value={discount.value.toString()}  onChange={val => updateDiscount(index, 'value', val)} /></td>
                                             <td><BiTrash onClick={() => removeDiscount(index)} /></td>
                                         </tr>
                                     )
@@ -92,7 +125,7 @@ function Settings() {
                     </Table>
                 </div>
 
-                <Button variant='secondary' text='Salvar' />
+                <Button variant='secondary' text='Salvar' onClick={handleSubmit} />
             </>
         </ScreenTemplate>
     )

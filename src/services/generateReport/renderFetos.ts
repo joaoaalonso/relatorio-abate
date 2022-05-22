@@ -1,16 +1,17 @@
 import formatNumber from './formatNumber'
-import { getFetalAge, getFetalWeight } from '../configs'
+import { getSettings } from '../settings'
 
-export default function(input: any) {
+export default async function(input: any) {
     if (input.sexo != 'F' || Object.keys(input.fetos).length == 0) return null
 
+    const settings = await getSettings()
     let pesoTotalFetos = 0
     const descricaoFetos: any[] = []
     input.fetos.forEach((fetos: any) => {
         if (!!fetos.type && !!fetos.value) {
             const type: 'P' | 'M' | 'G' = fetos.type
-            pesoTotalFetos += getFetalWeight(type) * fetos.value
-            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${getFetalAge(type)} COM MÉDIA DE ${getFetalWeight(type)} KG`)
+            pesoTotalFetos += settings.fetalWeights[type] * fetos.value
+            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${settings.fetalAges[type]} COM MÉDIA DE ${settings.fetalWeights[type]} KG`)
         }
     })
     

@@ -14,11 +14,18 @@
     "allowlist": {
       "all": false,
       "fs": {
-        "writeFile": true
+        "writeFile": true,
+        "readDir": true,
+        "createDir": true,
+        "readFile": true,
+        "scope": ["*"]
       },
       "dialog": {
         "open": true,
         "save": true
+      },
+      "path": {
+        "all": true
       }
     },
     "bundle": {
