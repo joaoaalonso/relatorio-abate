@@ -101,7 +101,8 @@ function Invoices() {
             success && swal('', 'Relatório gerado com sucesso!', 'success')
         })
         .catch(e => {
-            swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
+            // swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
+            swal('', e.message, 'error')
         })
         .finally(() => {
             setLoading(false)
@@ -398,10 +399,10 @@ function Invoices() {
                                         return (
                                             <tr key={`fetos-${index}`}>
                                                 <td><Select  
-                                                    name='desconto' 
-                                                    register={register} 
+                                                    // name='desconto' 
+                                                    // register={register} 
                                                     errors={errors} 
-                                                    required 
+                                                    onChange={(value) => updateTableRow(fetos, setFetos, index, 'type', value)}
                                                     options={fetalSizes.map(size => {
                                                         return { value: size, text: size }
                                                     })} 

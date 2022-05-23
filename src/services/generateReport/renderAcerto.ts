@@ -1,13 +1,14 @@
 import formatNumber from './formatNumber'
 import { getSettings } from '../settings'
+import swal from 'sweetalert'
 
 export default async function (input: any) {
     if (!input.valorArroba) return null
     const settings = await getSettings()
-
     const mediaLote = input.PC / settings.arroba
     const valorBruto = input.valorArroba * input.numeroAnimais * mediaLote
-    const porcentagemDesconto = settings.discounts[input.desconto].value
+    const discount = settings.discounts.find(d => d.name == input.desconto)
+    const porcentagemDesconto =  discount ? discount.value : 0
     const desconto = valorBruto * porcentagemDesconto
 
     const textoPorcentagemDesconto = `${formatNumber(porcentagemDesconto * 100, 1)}%`
