@@ -1,5 +1,8 @@
-import { InputHTMLAttributes } from 'react';
 import './index.css'
+
+declare global {
+    interface Window { __TAURI__: any; }
+}
 
 interface TextFieldProps {
     errors?: any;
@@ -14,12 +17,7 @@ interface TextFieldProps {
 }
 
 function TextField({ value, name, label, errors, placeholder, register, onChange, type = 'text', required = false }: TextFieldProps) {
-    function handleRegister() {
-        if (register && name) {
-            return register(name, { required })
-        }
-        return {}
-    }
+    const registerConfigs = !!(register && name) ? register(name, { required }) : {};
 
     function handleOnChange(e: any) {
         if (onChange) {
@@ -27,18 +25,30 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
         }
     }
 
-    function handleKeyDown(event: any) {
+    async function handleKeyDown(event: KeyboardEvent) {
         const charCode = String.fromCharCode(event.which).toLowerCase();
         const control = event.ctrlKey || event.metaKey
         if (control) {
             event.preventDefault()
-            if (charCode === 'c') document.execCommand('copy')
-            else if(charCode === 'v') document.execCommand('paste')
+            let inputValue = value || ''
+            let inputHandler = onChange
+            const element = document.getElementsByName(registerConfigs.name)?.[0] as HTMLInputElement
+            if (element) {
+                inputValue = element.value
+                inputHandler = (text: string) => element.value += text
+            }
+            if (charCode === 'c') window.__TAURI__.clipboard.writeText(inputValue)
+            else if(charCode === 'v') window.__TAURI__.clipboard.readText().then(inputHandler)
             else if(charCode === 'x') document.execCommand('cut')
             else if(charCode === 'a') document.execCommand('selectAll')
             return
         }
-        if (event.code === 'Backspace') return
+        const allowed = [
+            'Backspace',
+            'Tab',
+            'CapsLock'
+        ]
+        if (allowed.includes(event.code)) return
         if (
             type === 'decimal' && !event.key.match(/^[0-9,]*$/) ||
             type === 'integer' && !event.key.match(/^[0-9]*$/)
@@ -63,7 +73,7 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
                 placeholder={placeholder}
                 onChange={handleOnChange}
                 onKeyDown={handleKeyDown}
-                {...handleRegister()}
+                {...registerConfigs}
             />
         </div>
     )
