@@ -5,7 +5,6 @@ interface TextFieldProps {
     errors?: any;
     name?: string;
     type?: string;
-    step?: string;
     value?: string;
     label?: string;
     register?: any;
@@ -14,7 +13,7 @@ interface TextFieldProps {
     onChange?: (value: string) => void;
 }
 
-function TextField({ value, name, label, errors, placeholder, register, onChange, step, type = 'text', required = false }: TextFieldProps) {
+function TextField({ value, name, label, errors, placeholder, register, onChange, type = 'text', required = false }: TextFieldProps) {
     function handleRegister() {
         if (register && name) {
             return register(name, { required })
@@ -31,15 +30,20 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
     function handleKeyDown(event: any) {
         const charCode = String.fromCharCode(event.which).toLowerCase();
         const control = event.ctrlKey || event.metaKey
-        if(control && charCode === 'c') {
+        if (control) {
             event.preventDefault()
-            document.execCommand('copy')
-        } else if(control && charCode === 'v') {
+            if (charCode === 'c') document.execCommand('copy')
+            else if(charCode === 'v') document.execCommand('paste')
+            else if(charCode === 'x') document.execCommand('cut')
+            else if(charCode === 'a') document.execCommand('selectAll')
+            return
+        }
+        if (event.code === 'Backspace') return
+        if (
+            type === 'decimal' && !event.key.match(/^[0-9,]*$/) ||
+            type === 'integer' && !event.key.match(/^[0-9]*$/)
+        ) {
             event.preventDefault()
-            document.execCommand('paste')
-        } else if(control && charCode === 'a') {
-            event.preventDefault()
-            document.execCommand('selectAll')
         }
     }
 
@@ -54,9 +58,7 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
             }
             <Tag
                 rows={3}
-                type={type}
                 value={value}
-                step={step}
                 className={`text-field ${hasError ? 'text-field-error' : ''}`}
                 placeholder={placeholder}
                 onChange={handleOnChange}

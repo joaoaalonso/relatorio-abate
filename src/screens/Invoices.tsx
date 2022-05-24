@@ -170,7 +170,7 @@ function Invoices() {
                             />
                         </div>
                         <div className='column'>
-                            <TextField name='numeroRevisao' type='number' label='Nº da revisão' step="1" register={register} errors={errors} required />
+                            <TextField name='numeroRevisao' type='integer' label='Nº da revisão' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
                             <DatePicker
@@ -203,7 +203,7 @@ function Invoices() {
                     
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='numeroAnimais' label='Nº de animais' type='number' step='1' register={register} errors={errors} required />
+                            <TextField name='numeroAnimais' label='Nº de animais' type='integer' register={register} errors={errors} required />
                             <Select label='Sexo' name='sexo' register={register} errors={errors} options={[
                                 {value: 'F', text: 'F'},
                                 {value: 'MI', text: 'MI'},
@@ -224,7 +224,7 @@ function Invoices() {
 
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='valorArroba' label='Valor da arroba' type='number' step='0.01' register={register} errors={errors} />
+                            <TextField name='valorArroba' label='Valor da arroba' type='decimal' register={register} errors={errors} />
                         </div>
                         <div className='column'>
                             <Select label='Precoce?' name='adicionalPrecoce' register={register} errors={errors} options={[
@@ -245,13 +245,13 @@ function Invoices() {
                             />
                         </div>
                         <div className='column'>
-                            <TextField name='pesoVacina' label='Peso da vacina' type='number' step='0.01' register={register} errors={errors} required />
+                            <TextField name='pesoVacina' label='Peso da vacina' type='decimal' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
-                            <TextField name='PV' label='PV' type='number' step='0.01' register={register} errors={errors} required />
+                            <TextField name='PV' label='PV' type='decimal' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
-                            <TextField name='PC' label='PC' type='number' step='0.01' register={register} errors={errors} required />
+                            <TextField name='PC' label='PC' type='decimal' register={register} errors={errors} required />
                         </div>
                     </div>
 
@@ -431,7 +431,7 @@ function Invoices() {
                                         return (
                                             <tr key={`premiacoes-${index}`}>
                                                 <td><TextField onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField type='number' step='0.01' onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'value', value)} value={elem.value} /></td>
+                                                <td><TextField type='decimal' onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'value', value)} value={elem.value} /></td>
                                                 <td><BiTrash onClick={() => removeTableRow(premiacoes, setPremiacoes, index)} /></td>
                                             </tr>
                                         )
