@@ -22,9 +22,24 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
         return {}
     }
 
-    function handleOnChage(e: any) {
+    function handleOnChange(e: any) {
         if (onChange) {
             onChange(e.target.value)
+        }
+    }
+
+    function handleKeyDown(event: any) {
+        const charCode = String.fromCharCode(event.which).toLowerCase();
+        const control = event.ctrlKey || event.metaKey
+        if(control && charCode === 'c') {
+            event.preventDefault()
+            document.execCommand('copy')
+        } else if(control && charCode === 'v') {
+            event.preventDefault()
+            document.execCommand('paste')
+        } else if(control && charCode === 'a') {
+            event.preventDefault()
+            document.execCommand('selectAll')
         }
     }
 
@@ -44,7 +59,8 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
                 step={step}
                 className={`text-field ${hasError ? 'text-field-error' : ''}`}
                 placeholder={placeholder}
-                onChange={handleOnChage}
+                onChange={handleOnChange}
+                onKeyDown={handleKeyDown}
                 {...handleRegister()}
             />
         </div>

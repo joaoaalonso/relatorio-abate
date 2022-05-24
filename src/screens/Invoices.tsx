@@ -101,7 +101,6 @@ function Invoices() {
             success && swal('', 'Relatório gerado com sucesso!', 'success')
         })
         .catch(e => {
-            // swal('', 'Ocorreu um erro ao gerar o relatório!', 'error')
             swal('', e.message, 'error')
         })
         .finally(() => {
