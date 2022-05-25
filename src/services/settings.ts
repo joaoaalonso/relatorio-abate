@@ -1,19 +1,19 @@
 import { appDir, join } from '@tauri-apps/api/path'
 import { createDir, readDir, readTextFile, writeFile } from '@tauri-apps/api/fs'
 
-interface Discount {
+export interface Discount {
     name: string
     value: number
 }
 
-interface FetalWeights {
+export interface FetalWeights {
     [key: string]: number
     P: number
     M: number
     G: number
 }
 
-interface FetalAges {
+export interface FetalAges {
     [key: string]: string
     P: string
     M: string
