@@ -1,6 +1,6 @@
 import './index.css'
 import React from 'react';
-
+import Compress from 'compress.js'
 import { BiPlus, BiX } from 'react-icons/bi'
 
 interface PhotosProps {
@@ -10,26 +10,22 @@ interface PhotosProps {
 
 function Photos({ photos, setPhotos }: PhotosProps) {
     async function addPhoto(e: React.ChangeEvent<HTMLInputElement>) {
-        const newPhotos = e?.target?.files
-        const convertedPhotos: string[] = []
-        if (newPhotos && newPhotos.length) {
-            for (let i = 0; i < newPhotos.length; i++) {
-                await new Promise((resolve) => {
-                    const reader = new FileReader()
-                    reader.readAsDataURL(newPhotos[i])
-                    reader.onload = () => {
-                        if (reader.result) {
-                            convertedPhotos.push(reader.result?.toString())
-                        }
-                        resolve(true)
-                    }
-                })
-            }
-            setPhotos([...photos, ...convertedPhotos])
-            const inputElem: any = document?.getElementById('add-photo')
-            if (inputElem) {
-                inputElem.value = ''
-            }
+        
+        const compress = new Compress()
+        if (e?.target?.files) {
+            console.log(e.target.files)
+            compress.compress([...e.target.files], {
+                quality: 0.7,
+                maxWidth: 1200,
+                maxHeight: 1200,
+            })
+            .then(results => {
+                setPhotos([...photos, ...results.map(result => `${result.prefix}${result.data}`)])
+            })
+        }
+        const inputElem: any = document?.getElementById('add-photo')
+        if (inputElem) {
+            inputElem.value = ''
         }
     }
 

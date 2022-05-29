@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { NavLink } from 'react-router-dom'
-import { FiSettings } from 'react-icons/fi'
+import { GiMeatCleaver } from 'react-icons/gi'
+import { FiSettings, FiUsers } from 'react-icons/fi'
 import { HiOutlineDocumentReport } from 'react-icons/hi'
 import { BiChevronLeft, BiChevronRight } from 'react-icons/bi'
 
@@ -17,6 +18,12 @@ function SideMenu() {
             <img src={logo} />
             <NavLink to='/'>
                 <HiOutlineDocumentReport size={ICON_SIZE} /><span>Relatório</span>
+            </NavLink>
+            <NavLink to='/clients'>
+                <FiUsers size={ICON_SIZE} /><span>Clientes</span>
+            </NavLink>
+            <NavLink to='/slaughterhouse'>
+                <GiMeatCleaver size={ICON_SIZE} /><span>Abatedouros</span>
             </NavLink>
             <NavLink to='/settings'>
                 <FiSettings size={ICON_SIZE} /><span>Configurações</span>

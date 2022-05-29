@@ -32,19 +32,13 @@ export default async function(input: any, path: string): Promise<boolean> {
                                     { text: 'RELATÓRIO', alignment: 'center', bold: true, fontSize: 12 },
                                     { text: 'FINAL', alignment: 'center', bold: true, fontSize: 12 },
                                     '\n',
-                                    `DATA: ${input.data}`
                                 ],
                                 colSpan: 2
                             },
                             {},
                             {
-                                stack: [
-                                    'Criado:',
-                                    input.dataCriacao,
-                                    '\n',
-                                    `Revisão: ${('00' + input.numeroRevisao).slice(-2)}`,
-                                    input.dataRevisao
-                                ],
+                                
+                                text: `DATA: ${input.data}`,
                                 alignment: 'center'
                             }
                         ],

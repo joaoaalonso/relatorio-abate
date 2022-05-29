@@ -70,8 +70,6 @@ function Invoices() {
         const input = {
             ...data,
             data: formatDate(data.data, 'dd/MM/yyyy', { locale: ptBr }),
-            dataCriacao: formatDate(data.dataCriacao, 'dd/MM/yyyy', { locale: ptBr }),
-            dataRevisao: formatDate(data.dataRevisao, 'dd/MM/yyyy', { locale: ptBr }),
             valorArroba: data.valorArroba ? parseNumber(data.valorArroba) : '',
             adicionalPrecoce: JSON.parse(data.adicionalPrecoce),
             PV: parseNumber(data.PV),
@@ -155,27 +153,6 @@ function Invoices() {
                             <DatePicker
                                 label="Data"
                                 name="data"
-                                control={control}
-                                errors={errors}
-                                required
-                            />
-                        </div>
-                        <div className='column'>
-                            <DatePicker
-                                label="Data da criação"
-                                name="dataCriacao"
-                                control={control}
-                                errors={errors}
-                                required
-                            />
-                        </div>
-                        <div className='column'>
-                            <TextField name='numeroRevisao' type='integer' label='Nº da revisão' register={register} errors={errors} required />
-                        </div>
-                        <div className='column'>
-                            <DatePicker
-                                label="Data da revisão"
-                                name="dataRevisao"
                                 control={control}
                                 errors={errors}
                                 required
