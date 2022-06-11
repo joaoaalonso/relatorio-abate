@@ -1,5 +1,8 @@
 import './index.css'
 
+import MaskedInput from 'react-maskedinput'
+import { Controller } from 'react-hook-form'
+
 declare global {
     interface Window { __TAURI__: any; }
 }
@@ -12,11 +15,25 @@ interface TextFieldProps {
     label?: string;
     register?: any;
     required?: boolean;
+    control?: any;
+    mask?: string
     placeholder?: string;
     onChange?: (value: string) => void;
 }
 
-function TextField({ value, name, label, errors, placeholder, register, onChange, type = 'text', required = false }: TextFieldProps) {
+function TextField({ 
+    value, 
+    name, 
+    label, 
+    errors, 
+    mask, 
+    control, 
+    placeholder, 
+    register, 
+    onChange, 
+    type = 'text', 
+    required = false 
+}: TextFieldProps) {
     const registerConfigs = !!(register && name) ? register(name, { required }) : {};
 
     function handleOnChange(e: any) {
@@ -61,11 +78,27 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
 
     const Tag = type == 'textarea' ? 'textarea' : 'input'
 
-    return (
-        <div className='text-field-container'>
-            {!!label && 
-                <label className='text-field-label'>{label}{required ? '*' : ''}</label>
-            }
+    function renderInput() {
+        if (mask && name && control) {
+            return (
+                <Controller
+                    control={control}
+                    name={name}
+                    rules={{ required }}
+                    render={({ field: { onChange, value, ref } }) => (
+                        <MaskedInput
+                            ref={ref}
+                            className={`text-field ${hasError ? 'text-field-error' : ''}`}
+                            onChange={onChange}
+                            value={value}
+                            mask={mask}
+                        />
+                    )}
+                />
+            )
+        }
+
+        return (
             <Tag
                 rows={3}
                 value={value}
@@ -75,6 +108,15 @@ function TextField({ value, name, label, errors, placeholder, register, onChange
                 onKeyDown={handleKeyDown}
                 {...registerConfigs}
             />
+        )
+    }
+
+    return (
+        <div className='text-field-container'>
+            {!!label && 
+                <label className='text-field-label'>{label}{required ? '*' : ''}</label>
+            }
+            {renderInput()}
         </div>
     )
 }

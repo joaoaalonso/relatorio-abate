@@ -1,0 +1,3 @@
+[submodule "tauri-plugin-sql"]
+	path = tauri-plugin-sql
+	url = https://github.com/tauri-apps/tauri-plugin-sql

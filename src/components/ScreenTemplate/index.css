@@ -17,6 +17,7 @@
 .main-content > .top-bar a {
     transition: 0.3s;
     display: flex;
+    text-decoration: none;
     justify-content: center;
 }
 
@@ -30,8 +31,11 @@
 }
 
 .content {
-    padding: 20px;
     min-height: 100%;
+}
+
+.content-bg {
+    padding: 20px;
     border-radius: 3px;
     background-color: white;
     box-shadow: 0px 0px 21px 5px rgba(0,0,0,0.05);

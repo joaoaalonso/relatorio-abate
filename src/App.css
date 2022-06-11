@@ -18,10 +18,17 @@
   flex: 1;
 }
 
-@media screen and (max-width: 800px) {
-  .row {
-    flex-direction: column;
-  }
+a {
+  color: black;
+}
+
+.svg-button {
+  color: black;
+  cursor: pointer;
+}
+
+.svg-button:hover {
+  color: #5ea7f8;
 }
 
 .swal-modal {
@@ -31,4 +38,14 @@
 .swal-button {
   border-radius: none;
   background-color: #5ea7f8; 
+}
+
+.swal-button--cancel {
+  background-color: #f1f2f5;
+}
+
+@media screen and (max-width: 800px) {
+  .row {
+    flex-direction: column;
+  }
 }

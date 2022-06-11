@@ -22,7 +22,7 @@ function SideMenu() {
             <NavLink to='/clients'>
                 <FiUsers size={ICON_SIZE} /><span>Clientes</span>
             </NavLink>
-            <NavLink to='/slaughterhouse'>
+            <NavLink to='/slaughterhouses'>
                 <GiMeatCleaver size={ICON_SIZE} /><span>Abatedouros</span>
             </NavLink>
             <NavLink to='/settings'>
