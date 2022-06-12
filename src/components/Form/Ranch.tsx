@@ -47,8 +47,8 @@ function RanchForm({ clientId, ranch, onSave }: RanchFormProps) {
         }
 
         handler(params)
-            .then((id: number) => swal('', message, 'success').then(() => id))
             .then((id: number) => { onSave && onSave(id) })
+            .then(() => swal('', message, 'success'))
             .catch(swal)
     }
 

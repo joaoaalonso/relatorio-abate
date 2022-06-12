@@ -46,8 +46,8 @@ function ClientForm({ client, onSave }: ClientFormProps) {
         }
 
         handler(params)
-            .then((id: number) => swal('', message, 'success').then(() => id))
             .then((id: number) => { onSave && onSave(id) })
+            .then(() => swal('', message, 'success'))
             .catch(swal)
     }
 

@@ -3,15 +3,16 @@ import 'react-responsive-modal/styles.css';
 import swal from 'sweetalert'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
-import { BiEdit, BiTrash } from 'react-icons/bi'
+import { BiEdit, BiPlus, BiTrash } from 'react-icons/bi'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import ClientForm from '../../components/Form/Client';
+import Table from '../../components/Table'
+import RanchForm from '../../components/Form/Ranch'
+import ClientForm from '../../components/Form/Client'
 import ScreenTemplate from '../../components/ScreenTemplate'
 
-import { getClientById, deleteClient, Client } from '../../services/clients'
 import { deleteRanch, getRanches, Ranch } from '../../services/ranches'
-import RanchForm from '../../components/Form/Ranch';
+import { getClientById, deleteClient, Client } from '../../services/clients'
 
 function ClientDetails() {
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -112,6 +113,20 @@ function ClientDetails() {
         })
     }
 
+    function renderAddress() {
+        const addressComponents = []
+
+        if (client?.streetName) addressComponents.push(client.streetName)
+        if (client?.streetNumber) addressComponents.push(client.streetNumber)
+        if (client?.addressComplement) addressComponents.push(client.addressComplement)
+        if (client?.neighborhood) addressComponents.push(client.neighborhood)
+        if (client?.postalCode) addressComponents.push(client.postalCode)
+        if (client?.city) addressComponents.push(client.city)
+        if (client?.state) addressComponents.push(client.state)
+        
+        return addressComponents.join(', ')
+    }
+
     return (
         <ScreenTemplate
             backLink='/clients'
@@ -119,15 +134,39 @@ function ClientDetails() {
             rightComponent={renderTopBarButtons()}
         >
             <>
-                <p>{JSON.stringify(client)}</p>
-                {ranches.map(ranch => (
-                    <div key={ranch.id}>
-                        {JSON.stringify(ranch)}
-                        <button onClick={() => editRanch(ranch)}>edit</button>
-                        <button onClick={() => removeRanch(ranch)}>delete</button>
-                    </div>
-                ))}
-                <button onClick={() => setRanchModalIsOpen(true)}>Adicionar propriedade</button>
+                <p>Nome: {client?.name || '-'}</p>
+                <p>Endereço: {renderAddress()}</p>
+                <Table 
+                    title='Propriedades'
+                    righComponent={<BiPlus size={25} className='svg-button' onClick={() => setRanchModalIsOpen(true)} />}
+                >
+                    <>
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Endereço</th>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                                <th>Descrição</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {ranches.map(ranch => (
+                                <tr key={ranch.id}>
+                                    <td>{ranch.name}</td>
+                                    <td>{ranch.address}</td>
+                                    <td>{ranch.city}</td>
+                                    <td>{ranch.state}</td>
+                                    <td>{ranch.description}</td>
+                                    <td><BiEdit size={15} onClick={() => editRanch(ranch)} /></td>
+                                    <td><BiTrash size={15} onClick={() => removeRanch(ranch)} /></td>
+                                </tr>
+                            ))}
+                            {!ranches.length && <tr><td colSpan={5}>Nenhuma propriedade cadastrada</td></tr>}
+                        </tbody>
+                    </>
+                </Table>
+                
                 <Modal open={modalIsOpen} onClose={resetModal}>
                     <div style={{ width: 400, padding: 24, paddingTop: 36 }}>
                         <ClientForm

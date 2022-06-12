@@ -14,12 +14,16 @@
     background-color: #e5e5e5;
 }
 
-.custom-table-wrapper > p {
+.custom-table-wrapper > .custom-table-title {
     margin: 0;
     width: 100%;
-    padding: 8px 5px;
+    display: flex;
     font-size: 12px;
+    padding: 0 10px;
+    align-items: center;
+    /* border: 1px solid black; */
     background-color: #e5e5e5;
+    justify-content: space-between;
     border-bottom: 1px solid #c0c0c0;
 }
 
@@ -51,8 +55,4 @@
 
 .custom-table-wrapper > .custom-table svg:hover {
     color: #5ea7f8;
-}
-
-.custom-table-wrapper > .custom-table .custom-table-wrapper > .custom-table-title {
-    font-size: 14px;
 }

@@ -6,22 +6,22 @@ import { useState, useEffect } from 'react'
 import { save } from '@tauri-apps/api/dialog'
 import { BiPlus, BiTrash } from 'react-icons/bi'
 
-import Table from '../components/Table'
-import Button from '../components/Button'
-import Select from '../components/Select'
-import Photos from '../components/Photos'
-import Loading from '../components/Loading'
-import TextField from '../components/TextField'
-import DatePicker from '../components/DatePicker'
-import { getSettings } from '../services/settings'
-import ScreenTemplate from '../components/ScreenTemplate'
+import Table from '../../components/Table'
+import Button from '../../components/Button'
+import Select from '../../components/Select'
+import Photos from '../../components/Photos'
+import Loading from '../../components/Loading'
+import TextField from '../../components/TextField'
+import DatePicker from '../../components/DatePicker'
+import { getSettings } from '../../services/settings'
+import ScreenTemplate from '../../components/ScreenTemplate'
 
-import generateReport from '../services/generateReport'
-import { Client, getClients } from '../services/clients'
-import { getRanches, Ranch } from '../services/ranches'
-import { getSlaughterhouses, getSlaughterhouseUnits } from '../services/slaughterhouse'
+import { getRanches, Ranch } from '../../services/ranches'
+import generateReport from '../../services/generateReport'
+import { Client, getClients } from '../../services/clients'
+import { getSlaughterhouses, getSlaughterhouseUnits } from '../../services/slaughterhouse'
 
-function Invoices() {
+function InvoiceForm() {
     const [loading, setLoading] = useState(false)
     const [isFemale, setIsFemale] = useState(true)
 
@@ -196,7 +196,7 @@ function Invoices() {
     }
 
     return (
-        <ScreenTemplate title='Gerar relatório'>
+        <ScreenTemplate title='Criar relatório' backLink='/'>
             <>
                 <Loading loading={loading} text='Gerando relatório...' />
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -210,9 +210,6 @@ function Invoices() {
                                 required
                             />
                         </div>
-                    </div>
-
-                    <div className='row'>
                         <div className='column'>
                             <Select label='Unidade' name='unidadeAbatedoura' register={register} errors={errors} options={
                                 slaughterhouses.map(s => ({ value: `${s.id}`, text: s.name }))
@@ -224,10 +221,13 @@ function Invoices() {
                             } required />
                         </div>
                     </div>
-                    <Select label='Proprietário' name='proprietario' register={register} errors={errors} options={
-                        clients.map(client => ({ value: `${client.id}`, text: client.name }))
-                    } required />
+
                     <div className='row'>
+                        <div className='column'>
+                            <Select label='Proprietário' name='proprietario' register={register} errors={errors} options={
+                                clients.map(client => ({ value: `${client.id}`, text: client.name }))
+                            } required />
+                        </div>
                         <div className='column'>
                             <Select label='Propriedade' name='propriedade' register={register} errors={errors} options={
                                 ranches.map(ranch => ({ value: `${ranch.id}`, text: ranch.name }))
@@ -492,4 +492,4 @@ function Invoices() {
     )
 }
 
-export default Invoices
+export default InvoiceForm

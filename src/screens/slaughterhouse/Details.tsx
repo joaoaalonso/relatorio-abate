@@ -1,14 +1,15 @@
-import 'react-responsive-modal/styles.css';
+import 'react-responsive-modal/styles.css'
 
 import swal from 'sweetalert'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
-import { BiEdit, BiTrash } from 'react-icons/bi'
+import { BiEdit, BiPlus, BiTrash } from 'react-icons/bi'
 import { useNavigate, useParams } from 'react-router-dom'
 
+import Table from '../../components/Table'
 import ScreenTemplate from '../../components/ScreenTemplate'
 import SlaughterhouseForm from '../../components/Form/Slaughterhouse';
-import SlaughterhouseUnitForm from '../../components/Form/SlaughterhouseUnit';
+import SlaughterhouseUnitForm from '../../components/Form/SlaughterhouseUnit'
 
 import { 
     deleteSlaughterhouse, 
@@ -125,15 +126,32 @@ function SlaughterhouseDetails() {
             rightComponent={renderTopBarButtons()}
         >
             <>
-                <p>{JSON.stringify(slaughterhouse)}</p>
-                {units.map(unit => (
-                    <div key={unit.id}>
-                        <p>{JSON.stringify(unit)}</p>
-                        <button onClick={() => editUnit(unit)}>edit</button>
-                        <button onClick={() => deleteUnit(unit)}>delete</button>
-                    </div>
-                ))}
-                <button onClick={() => setUnitModalIsOpen(true)}>Adicionar unidade</button>
+                <p>Nome: {slaughterhouse?.name}</p>
+                <Table
+                    title='Unidades abatedoura'
+                    righComponent={<BiPlus size={25} className='svg-button' onClick={() => setUnitModalIsOpen(true)} />}
+                >
+                    <>
+                        <thead>
+                            <tr>
+                                <th>Cidade</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {units.map(unit => (
+                                <tr key={unit.id}>
+                                    <td>{unit.city}</td>
+                                    <td>{unit.state}</td>
+                                    <td><BiEdit size={15} onClick={() => editUnit(unit)} /></td>
+                                    <td><BiTrash size={15} onClick={() => deleteUnit(unit)} /></td>
+                                </tr>
+                            ))}
+                            {!units.length && <tr><td colSpan={3}>Nenhuma unidade abatedoura cadastrada</td></tr>}
+                        </tbody>
+                    </>
+                </Table>
+                
                 <Modal open={modalIsOpen} onClose={resetModal}>
                     <div style={{ width: 400, padding: 24, paddingTop: 36 }}>
                         <SlaughterhouseForm

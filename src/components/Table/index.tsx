@@ -3,13 +3,17 @@ import './index.css'
 interface TableProps {
     title?: string;
     children: JSX.Element;
+    righComponent?: JSX.Element;
 }
 
 
-function Table({ title, children }: TableProps) {
+function Table({ title, righComponent, children }: TableProps) {
     return (
         <div className='custom-table-wrapper'>
-            {!!title && <p className='custom-table-title'>{title}</p>}
+            <div className='custom-table-title'>
+                {!!title && <p>{title}</p>}
+                {righComponent}
+            </div>
             <table className='custom-table'>
                 {children}
             </table>

@@ -10,6 +10,7 @@ import ScreenTemplate from '../../components/ScreenTemplate'
 
 import { getClients, Client } from '../../services/clients'
 import ClientForm from '../../components/Form/Client';
+import ClientCard from '../../components/Card/Client';
 
 function ClientList() {
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -33,12 +34,13 @@ function ClientList() {
     return (
         <ScreenTemplate
             title='Clientes'
+            noBackground
             rightComponent={<BiPlus onClick={() => setModalIsOpen(true)} size={25} className='svg-button' />}
         >
             <>
                 {clients.map(client => (
                     <Link key={client.id} to={`/clients/${client.id}`}>
-                        <span>{client.name}</span>
+                        <ClientCard client={client} />
                     </Link>
                 ))}
                 {!clients.length && <p>Nenhum cliente cadastrado</p>}
