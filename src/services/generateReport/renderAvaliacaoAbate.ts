@@ -1,4 +1,4 @@
-import { getSettings } from '../settings'
+import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
 
 function renderTableWithPercentage (label: string, input: any, inputKey: string) {
@@ -53,8 +53,7 @@ function renderSeqTable (label: string, input: any, inputKey: string, titles: st
 }
 
 async function renderFetoEVacina(input: any) {
-    const settings = await getSettings()
-    const valorKg = input.valorArroba ? input.valorArroba/settings.arroba : null
+    const valorKg = input.valorArroba ? input.valorArroba/ARROBA : null
     const valorVacina = valorKg ? input.pesoVacina * valorKg : null
 
     const body = [

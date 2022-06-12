@@ -17,10 +17,18 @@ import { getSettings } from '../services/settings'
 import ScreenTemplate from '../components/ScreenTemplate'
 
 import generateReport from '../services/generateReport'
+import { Client, getClients } from '../services/clients'
+import { getRanches, Ranch } from '../services/ranches'
+import { getSlaughterhouses, getSlaughterhouseUnits } from '../services/slaughterhouse'
 
 function Invoices() {
     const [loading, setLoading] = useState(false)
     const [isFemale, setIsFemale] = useState(true)
+
+    const [clients, setClients] = useState<Client[]>([])
+    const [ranches, setRanches] = useState<Ranch[]>([])
+    const [slaughterhouses, setSlaughterhouses] = useState<any[]>([])
+    const [slaughterhouseUnits, setSlaughterhouseUnits] = useState<any[]>([])
 
     const [maturidade, setMaturidade] = useState<any[]>([{ type: '', value: '' }])
     const [acabamento, setAcabamento] = useState<any[]>([{ type: '', value: '' }])
@@ -40,6 +48,7 @@ function Invoices() {
         register,
         handleSubmit,
         watch,
+        setValue,
         control,
         formState: { errors }
     } = useForm({
@@ -48,19 +57,62 @@ function Invoices() {
         }
     })
 
-    const watchSex = watch<any>(['sexo'])
-
     useEffect(() => {
-        setIsFemale(watchSex[0] === 'F')
-    }, [watchSex])
-
-    useEffect(() => {
+        getClients().then(c => {
+            if (c.length) {
+                setClients(c),
+                setValue('proprietario', c[0].id)
+            }
+        })
+        getSlaughterhouses().then(s => {
+            if (s.length) {
+                setSlaughterhouses(s)
+                setValue('unidadeAbatedoura', s[0].id)
+            }
+        })
         getSettings()
             .then(settings => {
                 setDiscounts(settings.discounts.map(d => d.name))
-                setFetalSizes(Object.keys(settings.fetalAges))
+                setFetalSizes(settings.fetus.map(fetus => fetus.size))
             })
     }, [])
+
+    const watchSex = watch<any>('sexo')
+    const watchClient = watch<any>('proprietario')
+    const watchRanch = watch<any>('propriedade')
+    const watchSlaughterhouse = watch<any>('unidadeAbatedoura')
+
+    useEffect(() => {
+        setIsFemale(watchSex === 'F')
+    }, [watchSex])
+
+    useEffect(() => {
+        if (watchClient) {
+            getRanches(parseInt(watchClient)).then(r => {
+                if (r.length) {
+                    setRanches(r)
+                    setValue('propriedade', r[0].id)
+                }
+            })
+        }
+    }, [watchClient])
+
+    useEffect(() => {
+        if (watchRanch) {
+            setValue('municipioPropriedade', ranches.find(r => r.id === parseInt(watchRanch))?.city)
+        }
+    }, [watchRanch])
+
+    useEffect(() => {
+        if (watchSlaughterhouse) {
+            getSlaughterhouseUnits(parseInt(watchSlaughterhouse)).then(s => {
+                if (s.length) {
+                    setSlaughterhouseUnits(s)
+                    setValue('municipioUnidadeAbatedoura', s[0].id)
+                }
+            })
+        }
+    }, [watchSlaughterhouse])
 
     function parseNumber(number: string) {
         return parseFloat(number.replace(',', '.'))
@@ -162,16 +214,24 @@ function Invoices() {
 
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='unidadeAbatedoura' label='Unidade abatedoura' register={register} errors={errors} required />
+                            <Select label='Unidade' name='unidadeAbatedoura' register={register} errors={errors} options={
+                                slaughterhouses.map(s => ({ value: `${s.id}`, text: s.name }))
+                            } required />
                         </div>
                         <div className='column'>
-                            <TextField name='municipioUnidadeAbatedoura' label='Município' register={register} errors={errors} required />
+                            <Select label='Município' name='municipioUnidadeAbatedoura' register={register} errors={errors} options={
+                                slaughterhouseUnits.map(s => ({ value: `${s.id}`, text: s.city }))
+                            } required />
                         </div>
                     </div>
-                    <TextField name='proprietario' label='Proprietário' register={register} errors={errors} required />
+                    <Select label='Proprietário' name='proprietario' register={register} errors={errors} options={
+                        clients.map(client => ({ value: `${client.id}`, text: client.name }))
+                    } required />
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='propriedade' label='Propriedade' register={register} errors={errors} required />
+                            <Select label='Propriedade' name='propriedade' register={register} errors={errors} options={
+                                ranches.map(ranch => ({ value: `${ranch.id}`, text: ranch.name }))
+                            } required />
                         </div>
                         <div className='column'>
                             <TextField name='municipioPropriedade' label='Município' register={register} errors={errors} required />

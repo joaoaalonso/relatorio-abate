@@ -6,25 +6,25 @@ import Table from '../components/Table'
 import Button from '../components/Button'
 import TextField from '../components/TextField'
 import ScreenTemplate from '../components/ScreenTemplate'
+
 import formatNumber from '../services/generateReport/formatNumber'
 import { getSettings, updateSettings } from '../services/settings'
 
 function Settings() {
     const [settings, setSettings] = useState<any>()
+    const [deletedIds, setDeletedIds] = useState<number[]>([])
 
     useEffect(() => {
         getSettings().then(settings => {
             setSettings({
-                ...settings,
                 discounts: settings.discounts.map(discount => ({
-                    name: discount.name,
-                    value: formatNumber(discount.value * 100),
+                    ...discount,
+                    value: formatNumber(discount.value * 100)
                 })),
-                fetalWeights: {
-                    P: formatNumber(settings.fetalWeights.P),
-                    M: formatNumber(settings.fetalWeights.M),
-                    G: formatNumber(settings.fetalWeights.G),
-                }
+                fetus: settings.fetus.map(fetus => ({
+                    ...fetus,
+                    weight: formatNumber(fetus.weight)
+                }))
             })
         })
     }, [])
@@ -38,6 +38,9 @@ function Settings() {
 
     function removeDiscount(index: number) {
         if (!settings) return
+        if (settings.discounts?.[index]?.id) {
+            setDeletedIds([...deletedIds, settings.discounts[index].id])
+        }
         let discounts = settings.discounts.filter((_: any, i: number) => i !== index)
         if (!discounts.length) {
             discounts = [{ name: '', value: 0 }]
@@ -45,18 +48,11 @@ function Settings() {
         setSettings({ ...settings, discounts })
     }
 
-    function updateFetalWeight(size: string, value: string) {
+    function updateFetus(index: number, field: string, value: string) {
         if (!settings) return
-        const fetalWeights = settings.fetalWeights
-        fetalWeights[size] = value
-        setSettings({ ...settings, fetalWeights })
-    }
-
-    function updateFetalAge(size: string, value: string) {
-        if (!settings) return
-        const fetalAges = settings.fetalAges
-        fetalAges[size] = value
-        setSettings({ ...settings, fetalAges })
+        const fetus = settings.fetus
+        fetus[index][field] = value
+        setSettings({ ...settings, fetus })
     }
 
     function updateDiscount(index: number, field: string, value: string) {
@@ -68,16 +64,17 @@ function Settings() {
     
     function handleSubmit() {
         if(!settings) return
-        const discounts = settings.discounts.map((discount: any) => ({ 
-            name: discount.name,
-            value: (parseFloat(discount.value.replace(',', '.')) || 0) / 100
-        }))
-        const fetalWeights = {
-            P: parseFloat(settings.fetalWeights.P.replace(',', '.')),
-            M: parseFloat(settings.fetalWeights.M.replace(',', '.')),
-            G: parseFloat(settings.fetalWeights.G.replace(',', '.')),
+        const data = {
+            discounts: settings.discounts.map((discount: any) => ({
+                ...discount,
+                value: (parseFloat(discount.value.replace(',', '.')) || 0)
+            })),
+            fetus: settings.fetus.map((fetus: any) => ({
+                ...fetus,
+                weight: (parseFloat(fetus.weight.replace(',', '.')) || 0)
+            }))
         }
-        updateSettings({ ...settings, discounts, fetalWeights })
+        updateSettings(data, deletedIds)
             .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
             .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
     }
@@ -102,12 +99,12 @@ function Settings() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {(Object.keys(settings.fetalAges)).map(size => {
+                                {settings.fetus.map((fetus: any, index: number) => {
                                     return (
-                                        <tr key={`fetal-${size}`}>
-                                            <td>{size}</td>
-                                            <td><TextField type='decimal' value={settings.fetalWeights[size].toString()} onChange={val => updateFetalWeight(size, val)} /></td>
-                                            <td><TextField value={settings.fetalAges[size]} onChange={val => updateFetalAge(size, val)} /></td>
+                                        <tr key={`fetal-${fetus.id}`}>
+                                            <td>{fetus.size}</td>
+                                            <td><TextField type='decimal' value={fetus.weight} onChange={val => updateFetus(index, 'weight', val)} /></td>
+                                            <td><TextField value={fetus.age} onChange={val => updateFetus(index, 'age', val)} /></td>
                                         </tr>
                                     )
                                 })}

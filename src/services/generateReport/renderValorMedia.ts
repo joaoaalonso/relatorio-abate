@@ -1,9 +1,8 @@
-import { getSettings } from '../settings'
+import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
 
 export default async function (input: any) {
-    const settings = await getSettings()
-    const mediaLote = input.PC / settings.arroba
+    const mediaLote = input.PC / ARROBA
     
     let value = input.valorArroba ? formatNumber(input.valorArroba) : ''
     if (input.adicionalPrecoce && value) {

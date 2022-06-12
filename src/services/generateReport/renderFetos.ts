@@ -7,11 +7,18 @@ export default async function(input: any) {
     const settings = await getSettings()
     let pesoTotalFetos = 0
     const descricaoFetos: any[] = []
+    const fetus: any = {}
+    settings.fetus.forEach(f => {
+        fetus[f.size] = {
+            age: f.age,
+            weight: f.weight
+        }
+    })
     input.fetos.forEach((fetos: any) => {
         if (!!fetos.type && !!fetos.value) {
             const type: 'P' | 'M' | 'G' = fetos.type
-            pesoTotalFetos += settings.fetalWeights[type] * fetos.value
-            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${settings.fetalAges[type]} COM MÉDIA DE ${settings.fetalWeights[type]} KG`)
+            pesoTotalFetos += fetus[fetos.type].weight * fetos.value
+            descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${fetus[fetos.type].age} COM MÉDIA DE ${fetus[fetos.type].weight} KG`)
         }
     })
     

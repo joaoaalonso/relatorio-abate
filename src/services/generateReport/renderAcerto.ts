@@ -1,11 +1,10 @@
 import formatNumber from './formatNumber'
-import { getSettings } from '../settings'
-import swal from 'sweetalert'
+import { ARROBA, getSettings } from '../settings'
 
 export default async function (input: any) {
     if (!input.valorArroba) return null
     const settings = await getSettings()
-    const mediaLote = input.PC / settings.arroba
+    const mediaLote = input.PC / ARROBA
     const valorBruto = input.valorArroba * input.numeroAnimais * mediaLote
     const discount = settings.discounts.find(d => d.name == input.desconto)
     const porcentagemDesconto =  discount ? discount.value : 0
