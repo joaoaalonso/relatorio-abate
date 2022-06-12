@@ -11,8 +11,10 @@ import ScreenTemplate from '../../components/ScreenTemplate'
 import SlaughterhouseForm from '../../components/Form/Slaughterhouse'
 import SlaughterhouseCard from '../../components/Card/Slaugtherhouse'
 import { getSlaughterhouses, Slaughterhouse } from '../../services/slaughterhouse'
+import TextField from '../../components/TextField'
 
 function SlaugtherhouseList() {
+    const [searchTerm, setSearchTerm] = useState('')
     const [modalIsOpen, setModalIsOpen] = useState(false)
     const [slaughterhouses, setSlaughterhouses] = useState<Slaughterhouse[]>([])
 
@@ -31,6 +33,12 @@ function SlaugtherhouseList() {
         fetch()
     }
 
+    function getFilteredSlaughterhouses() {
+        return slaughterhouses.filter(slaughterhouse => {
+            return slaughterhouse.name.toLowerCase().includes(searchTerm.toLowerCase())
+        })
+    }
+
 
     return (
         <ScreenTemplate
@@ -39,13 +47,17 @@ function SlaugtherhouseList() {
             rightComponent={<BiPlus size={25} onClick={() => setModalIsOpen(true)} className='svg-button' />}
         >
             <>
-                {slaughterhouses.map(slaughterhouse => (
+                <TextField placeholder='Pesquisar' onChange={setSearchTerm} />
+
+                {getFilteredSlaughterhouses().map(slaughterhouse => (
                     <Link key={slaughterhouse.id} to={`/slaughterhouses/${slaughterhouse.id}`}>
                         <SlaughterhouseCard slaughterhouse={slaughterhouse} />
                     </Link>
                 ))}
 
                 {!slaughterhouses.length && <p>Nenhum abatedouro cadastrado</p>}
+                {!!slaughterhouses.length && !getFilteredSlaughterhouses().length && <p>Nenhum abatedouro encontrado</p>}
+
                 <Modal open={modalIsOpen} onClose={() => setModalIsOpen(false)}>
                     <div style={{ width: 400, padding: 24, paddingTop: 36 }}>
                         <SlaughterhouseForm onSave={handleOnSave} />
