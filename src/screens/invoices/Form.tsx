@@ -54,6 +54,23 @@ function InvoiceForm() {
     } = useForm({
         defaultValues: {
             data: new Date(),
+            unidadeAbatedoura: '',
+            municipioUnidadeAbatedoura: '',
+            proprietario: '',
+            propriedade: '',
+            municipioPropriedade: '',
+            numeroAnimais: '',
+            sexo: 'F',
+            lote: '',
+            curral: '',
+            sequencial: '',
+            valorArroba: '',
+            desconto: '',
+            pesoVacina: '',
+            PV: '',
+            PC: '',
+            avaliacaoCurral: '',
+            observacoes: ''
         }
     })
 
@@ -61,13 +78,13 @@ function InvoiceForm() {
         getClients().then(c => {
             if (c.length) {
                 setClients(c),
-                setValue('proprietario', c[0].id)
+                setValue('proprietario', `${c[0].id}`)
             }
         })
         getSlaughterhouses().then(s => {
             if (s.length) {
                 setSlaughterhouses(s)
-                setValue('unidadeAbatedoura', s[0].id)
+                setValue('unidadeAbatedoura', `${s[0].id}`)
             }
         })
         getSettings()
@@ -77,10 +94,10 @@ function InvoiceForm() {
             })
     }, [])
 
-    const watchSex = watch<any>('sexo')
-    const watchClient = watch<any>('proprietario')
-    const watchRanch = watch<any>('propriedade')
-    const watchSlaughterhouse = watch<any>('unidadeAbatedoura')
+    const watchSex = watch('sexo')
+    const watchClient = watch('proprietario')
+    const watchRanch = watch('propriedade')
+    const watchSlaughterhouse = watch('unidadeAbatedoura')
 
     useEffect(() => {
         setIsFemale(watchSex === 'F')
@@ -91,7 +108,7 @@ function InvoiceForm() {
             getRanches(parseInt(watchClient)).then(r => {
                 if (r.length) {
                     setRanches(r)
-                    setValue('propriedade', r[0].id)
+                    setValue('propriedade', `${r[0].id}`)
                 }
             })
         }
@@ -99,7 +116,7 @@ function InvoiceForm() {
 
     useEffect(() => {
         if (watchRanch) {
-            setValue('municipioPropriedade', ranches.find(r => r.id === parseInt(watchRanch))?.city)
+            setValue('municipioPropriedade', ranches.find(r => r.id === parseInt(watchRanch))?.city || '')
         }
     }, [watchRanch])
 
@@ -108,7 +125,7 @@ function InvoiceForm() {
             getSlaughterhouseUnits(parseInt(watchSlaughterhouse)).then(s => {
                 if (s.length) {
                     setSlaughterhouseUnits(s)
-                    setValue('municipioUnidadeAbatedoura', s[0].id)
+                    setValue('municipioUnidadeAbatedoura', `${s[0].id}`)
                 }
             })
         }
@@ -123,7 +140,6 @@ function InvoiceForm() {
             ...data,
             data: formatDate(data.data, 'dd/MM/yyyy', { locale: ptBr }),
             valorArroba: data.valorArroba ? parseNumber(data.valorArroba) : '',
-            adicionalPrecoce: JSON.parse(data.adicionalPrecoce),
             PV: parseNumber(data.PV),
             PC: parseNumber(data.PC),
             pesoVacina: parseNumber(data.pesoVacina),
@@ -262,12 +278,6 @@ function InvoiceForm() {
                     <div className='row'>
                         <div className='column'>
                             <TextField name='valorArroba' label='Valor da arroba' type='decimal' register={register} errors={errors} />
-                        </div>
-                        <div className='column'>
-                            <Select label='Precoce?' name='adicionalPrecoce' register={register} errors={errors} options={[
-                                {value: 'false', text: 'Não'},
-                                {value: 'true', text: 'Sim'}
-                            ]} required />
                         </div>
                         <div className='column'>
                             <Select 

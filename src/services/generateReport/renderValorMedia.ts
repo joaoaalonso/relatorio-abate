@@ -5,9 +5,6 @@ export default async function (input: any) {
     const mediaLote = input.PC / ARROBA
     
     let value = input.valorArroba ? formatNumber(input.valorArroba) : ''
-    if (input.adicionalPrecoce && value) {
-        value += ' + PRECOCE'
-    }
 
     return {
         stack: [

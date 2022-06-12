@@ -26,11 +26,11 @@ function RanchForm({ clientId, ranch, onSave }: RanchFormProps) {
         defaultValues: ranch
     })
 
-    const watchPostalCode = watch<any>(['postalCode'])
+    const watchPostalCode = watch('postalCode')
 
     useEffect(() => {
-        if (watchPostalCode?.[0]) {
-            handlePostalCodeChange(watchPostalCode[0])
+        if (watchPostalCode) {
+            handlePostalCodeChange(watchPostalCode)
         }
     }, [watchPostalCode])
 
@@ -53,6 +53,7 @@ function RanchForm({ clientId, ranch, onSave }: RanchFormProps) {
     }
 
     function handlePostalCodeChange(postalCode: string) {
+        if (ranch && ranch.postalCode == postalCode) return
         const sanitizedPostalCode = postalCode.replace('_', '').replace('-', '')
         if (sanitizedPostalCode.length === 8) {
             getAddressFromPostalCode(sanitizedPostalCode).then(address => {
