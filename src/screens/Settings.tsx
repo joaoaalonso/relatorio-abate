@@ -11,8 +11,8 @@ import formatNumber from '../services/generateReport/formatNumber'
 import { getSettings, updateSettings } from '../services/settings'
 
 function Settings() {
-    const [settings, setSettings] = useState<any>()
     const [deletedIds, setDeletedIds] = useState<number[]>([])
+    const [settings, setSettings] = useState<any>({ discounts: [], fetus: [] })
 
     useEffect(() => {
         getSettings().then(settings => {
@@ -77,12 +77,6 @@ function Settings() {
         updateSettings(data, deletedIds)
             .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
             .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
-    }
-
-    if (!settings) {
-        return (
-            <div>Carregando...</div>
-        )
     }
 
     return (

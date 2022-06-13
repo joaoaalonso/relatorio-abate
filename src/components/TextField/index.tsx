@@ -15,6 +15,7 @@ interface TextFieldProps {
     label?: string;
     register?: any;
     required?: boolean;
+    disabled?: boolean;
     control?: any;
     mask?: string
     placeholder?: string;
@@ -32,7 +33,8 @@ function TextField({
     register, 
     onChange, 
     type = 'text', 
-    required = false 
+    required = false,
+    disabled = false
 }: TextFieldProps) {
     const registerConfigs = !!(register && name) ? register(name, { required }) : {};
 
@@ -92,6 +94,7 @@ function TextField({
                             onChange={onChange}
                             value={value}
                             mask={mask}
+                            disabled={disabled}
                         />
                     )}
                 />
@@ -106,6 +109,7 @@ function TextField({
                 placeholder={placeholder}
                 onChange={handleOnChange}
                 onKeyDown={handleKeyDown}
+                disabled={disabled}
                 {...registerConfigs}
             />
         )

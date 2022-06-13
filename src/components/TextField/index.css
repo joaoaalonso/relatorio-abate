@@ -4,16 +4,17 @@
 
 .text-field-container > .text-field {
     width: 100%;
-    padding: 5px;
+    padding: 8px;
     resize: none;
-    font-size: 12px;
+    font-size: 15px;
     transition: 0.3s;
-    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    border: 1px solid hsl(0, 0%, 80%);
 }
 
 .text-field-container > .text-field:focus {
-    border-color: #5ea7f8;
     outline: none;
+    border-color: #5ea7f8;
 }
 
 .text-field-container > .text-field-error {

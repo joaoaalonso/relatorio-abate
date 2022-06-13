@@ -6,11 +6,11 @@ import { BiPlus } from 'react-icons/bi'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
 
-import ScreenTemplate from '../../components/ScreenTemplate'
-
+import Card from '../../components/Card'
 import TextField from '../../components/TextField'
 import ClientForm from '../../components/Form/Client'
-import ClientCard from '../../components/Card/Client'
+import ScreenTemplate from '../../components/ScreenTemplate'
+
 import { getClients, Client } from '../../services/clients'
 
 function ClientList() {
@@ -50,7 +50,7 @@ function ClientList() {
                 
                 {getFilteredClients().map(client => (
                     <Link key={client.id} to={`/clients/${client.id}`}>
-                        <ClientCard client={client} />
+                        <Card text={client.name} />
                     </Link>
                 ))}
                 

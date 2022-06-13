@@ -28,8 +28,8 @@ function DatePicker({ label, name, errors, control, required = false }: DatePick
             }
 
             <Controller
-                control={control}
                 name={name}
+                control={control}
                 rules={{ required }}
                 render={({ field: { onChange, value, ref } }) => (
                     <ReactDatePicker

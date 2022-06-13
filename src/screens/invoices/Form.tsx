@@ -33,8 +33,12 @@ function InvoiceForm() {
     const [maturidade, setMaturidade] = useState<any[]>([{ type: '', value: '' }])
     const [acabamento, setAcabamento] = useState<any[]>([{ type: '', value: '' }])
     const [escoreRuminal, setEscoreRuminal] = useState<any[]>([{ type: '', value: '' }])
-    const [fetos, setFetos] = useState<any[]>([{ type: '', value: '' }])
     const [premiacoes, setPremiacoes] = useState<any[]>([{ type: '', value: '' }])
+    const [fetos, setFetos] = useState<any[]>([
+        { type: 'P', value: '0' },
+        { type: 'M', value: '0' },
+        { type: 'G', value: '0' },
+    ])
 
     const [dif, setDif] = useState<any[]>([{ seq: '', type: '', value: '' }])
     const [hematomas, setHematomas] = useState<any[]>([{ seq: '', type: '', value: '' }])
@@ -106,8 +110,8 @@ function InvoiceForm() {
     useEffect(() => {
         if (watchClient) {
             getRanches(parseInt(watchClient)).then(r => {
+                setRanches(r)
                 if (r.length) {
-                    setRanches(r)
                     setValue('propriedade', `${r[0].id}`)
                 }
             })
@@ -123,8 +127,8 @@ function InvoiceForm() {
     useEffect(() => {
         if (watchSlaughterhouse) {
             getSlaughterhouseUnits(parseInt(watchSlaughterhouse)).then(s => {
+                setSlaughterhouseUnits(s)
                 if (s.length) {
-                    setSlaughterhouseUnits(s)
                     setValue('municipioUnidadeAbatedoura', `${s[0].id}`)
                 }
             })
@@ -227,41 +231,41 @@ function InvoiceForm() {
                             />
                         </div>
                         <div className='column'>
-                            <Select label='Unidade' name='unidadeAbatedoura' register={register} errors={errors} options={
-                                slaughterhouses.map(s => ({ value: `${s.id}`, text: s.name }))
+                            <Select label='Unidade' name='unidadeAbatedoura' control={control} errors={errors} options={
+                                slaughterhouses.map(s => ({ value: `${s.id}`, label: s.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <Select label='Município' name='municipioUnidadeAbatedoura' register={register} errors={errors} options={
-                                slaughterhouseUnits.map(s => ({ value: `${s.id}`, text: s.city }))
+                            <Select label='Município' name='municipioUnidadeAbatedoura' control={control} errors={errors} options={
+                                slaughterhouseUnits.map(s => ({ value: `${s.id}`, label: s.city }))
                             } required />
                         </div>
                     </div>
 
                     <div className='row'>
                         <div className='column'>
-                            <Select label='Proprietário' name='proprietario' register={register} errors={errors} options={
-                                clients.map(client => ({ value: `${client.id}`, text: client.name }))
+                            <Select label='Proprietário' name='proprietario' control={control} errors={errors} options={
+                                clients.map(client => ({ value: `${client.id}`, label: client.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <Select label='Propriedade' name='propriedade' register={register} errors={errors} options={
-                                ranches.map(ranch => ({ value: `${ranch.id}`, text: ranch.name }))
+                            <Select label='Propriedade' name='propriedade' control={control} errors={errors} options={
+                                ranches.map(ranch => ({ value: `${ranch.id}`, label: ranch.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <TextField name='municipioPropriedade' label='Município' register={register} errors={errors} required />
+                            <TextField name='municipioPropriedade' label='Município' register={register} errors={errors} required disabled />
                         </div>
                     </div>
                     
                     <div className='row'>
                         <div className='column'>
                             <TextField name='numeroAnimais' label='Nº de animais' type='integer' register={register} errors={errors} required />
-                            <Select label='Sexo' name='sexo' register={register} errors={errors} options={[
-                                {value: 'F', text: 'F'},
-                                {value: 'MI', text: 'MI'},
-                                {value: 'MC', text: 'MC'},
-                                {value: 'MI/MC', text: 'MI/MC'}
+                            <Select label='Sexo' name='sexo' control={control} errors={errors} options={[
+                                {value: 'F', label: 'F'},
+                                {value: 'MI', label: 'MI'},
+                                {value: 'MC', label: 'MC'},
+                                {value: 'MI/MC', label: 'MI/MC'}
                             ]} required />
                         </div>
                         <div className='column'>
@@ -283,10 +287,10 @@ function InvoiceForm() {
                             <Select 
                                 label='Desconto' 
                                 name='desconto' 
-                                register={register} 
+                                control={control} 
                                 errors={errors} 
                                 options={discounts.map(discount => {
-                                    return { value: discount, text: discount }
+                                    return { value: discount, label: discount }
                                 })} 
                                 required 
                             />
@@ -437,24 +441,14 @@ function InvoiceForm() {
                                     <tr>
                                         <th>Tamanho</th>
                                         <th>Quantidade</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(fetos, setFetos)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {fetos.map((elem, index) => {
                                         return (
                                             <tr key={`fetos-${index}`}>
-                                                <td><Select  
-                                                    // name='desconto' 
-                                                    // register={register} 
-                                                    errors={errors} 
-                                                    onChange={(value) => updateTableRow(fetos, setFetos, index, 'type', value)}
-                                                    options={fetalSizes.map(size => {
-                                                        return { value: size, text: size }
-                                                    })} 
-                                                /></td>
+                                                <td>{elem.type}</td>
                                                 <td><TextField onChange={(value) => updateTableRow(fetos, setFetos, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(fetos, setFetos, index)} /></td>
                                             </tr>
                                         )
                                     })}

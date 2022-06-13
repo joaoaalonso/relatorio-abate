@@ -6,12 +6,12 @@ import { BiPlus } from 'react-icons/bi'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
 
-import ScreenTemplate from '../../components/ScreenTemplate'
-
-import SlaughterhouseForm from '../../components/Form/Slaughterhouse'
-import SlaughterhouseCard from '../../components/Card/Slaugtherhouse'
-import { getSlaughterhouses, Slaughterhouse } from '../../services/slaughterhouse'
+import Card from '../../components/Card'
 import TextField from '../../components/TextField'
+import ScreenTemplate from '../../components/ScreenTemplate'
+import SlaughterhouseForm from '../../components/Form/Slaughterhouse'
+
+import { getSlaughterhouses, Slaughterhouse } from '../../services/slaughterhouse'
 
 function SlaugtherhouseList() {
     const [searchTerm, setSearchTerm] = useState('')
@@ -51,7 +51,7 @@ function SlaugtherhouseList() {
 
                 {getFilteredSlaughterhouses().map(slaughterhouse => (
                     <Link key={slaughterhouse.id} to={`/slaughterhouses/${slaughterhouse.id}`}>
-                        <SlaughterhouseCard slaughterhouse={slaughterhouse} />
+                        <Card text={slaughterhouse.name} />
                     </Link>
                 ))}
 
