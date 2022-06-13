@@ -60,6 +60,14 @@ export const getSlaughterhouseUnits = async (slaughterhouseId: number): Promise<
         })
 }
 
+export const getSlaughterhouseUnitById = async (id: number): Promise<SlaughterhouseUnit> => {
+    return getInstance()
+        .then(instance => {
+            return instance.select<SlaughterhouseUnit[]>('SELECT * FROM slaughterhouseUnits WHERE id = $1', [id])
+                .then(res => res[0])
+        })
+}
+
 export const createSlaughterhouseUnit = async (slaughterhouseUnit: Omit<SlaughterhouseUnit, 'id'>): Promise<number> => {
     return getInstance()
         .then(instance => {

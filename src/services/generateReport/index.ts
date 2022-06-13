@@ -43,7 +43,7 @@ export default async function(input: any, path: string): Promise<boolean> {
                             }
                         ],
                         [
-                            renderDados(input), {},
+                            await renderDados(input), {},
                             await renderValorMedia(input), {}
                         ],
                         [

@@ -20,6 +20,14 @@ export const getRanches = async (clientId: number): Promise<Ranch[]> => {
         })
 }
 
+export const getRanchById = async (id: number): Promise<Ranch> => {
+    return getInstance()
+        .then(instance => {
+            return instance.select<Ranch[]>('SELECT * FROM ranches WHERE id = $1', [id])
+                .then(res => res[0])
+        })
+}
+
 export const createRanch = async (ranch: Omit<Ranch, 'id'>): Promise<number> => {
     return getInstance()
         .then(instance => {
