@@ -13,7 +13,7 @@
 
 .react-datepicker__input-container > input:focus {
     outline: none;
-    border-color: #5ea7f8;
+    border-color: #e9dec2;
 }
 
 .react-datepicker__input-container > .error {

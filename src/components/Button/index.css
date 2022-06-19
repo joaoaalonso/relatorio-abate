@@ -4,7 +4,7 @@
     font-size: 12px;
     cursor: pointer;
     transition: 0.3s;
-    border: 1px solid #d9d9d9;
+    border: 1px solid #45454f;
 }
 
 .button-primary {
@@ -15,15 +15,15 @@
 .button-secondary {
     color: white;
     font-weight: bold;
-    background-color: #5ea7f8;
+    background-color: #45454f;
 }
 
 .button:hover {
-    color: #5ea7f8;
-    border-color: #5ea7f8;
+    color: #d6cbaf;
+    border-color: #d6cbaf;
 }
 
 .button-secondary:hover {
     color: white;
-    background-color: #7fb8f9;
+    background-color: #d6cbaf;
 }

@@ -15,7 +15,9 @@ function SideMenu() {
 
     return (
         <div className={`side-menu ${menuIsClosed ? 'side-menu-close' : ''}`}>
-            <img src={logo} />
+            <div className="logo">
+                <img src={logo} />
+            </div>
             <NavLink to='/invoices'>
                 <HiOutlineDocumentReport size={ICON_SIZE} /><span>Relatório</span>
             </NavLink>

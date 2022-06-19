@@ -1,5 +1,6 @@
 import ReactSelect from 'react-select'
 import { Controller } from 'react-hook-form'
+import { readDir } from '@tauri-apps/api/fs';
 
 interface Options {
     label: string;
@@ -19,7 +20,18 @@ interface SelectProps {
 function Select({ name, label, errors, options, control, onChange, required = false }: SelectProps) {
     const hasError = errors && name && !!errors[name]
 
+    const getOptionBackgroundColor = (state: any) => {
+        if (state.isSelected) {
+            return '#45454f'
+        }
+        return state.isFocused ? '#e5e5e6' : 'white'
+    }
+
     const customStyles = {
+        option: (provided: any, state: any) => ({
+            ...provided,
+            backgroundColor: getOptionBackgroundColor(state)
+        }),
         control: (provided: any) => ({
             ...provided,
             border: `1px solid ${hasError ? 'red' : 'hsl(0, 0%, 80%)'}`,

@@ -6,7 +6,7 @@
   position: relative;
   align-items: center;
   flex-direction: column;
-  background-color: #051527;
+  background-color: #45454f;
 }
 
 .side-menu > a {
@@ -24,15 +24,26 @@
   color: white;
 }
 
-.side-menu > img {
+.side-menu > .logo {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-menu > .logo > img {
   width: 100%;
   max-width: 100px;
 }
 
 .side-menu > .active {
-  color: white;
-  background: #3773C8;
-  background: linear-gradient(to right, #3773C8 0%, #448FF7 100%);
+  color: #45454f;
+  background: #e9dec2;
+  background: linear-gradient(to right, #e9dec2 0%, #d6ccb1 100%);
+}
+
+.side-menu > .active:hover {
+  color: #45454f;
 }
 
 .side-menu span {
@@ -45,10 +56,6 @@
 
 .side-menu-close a {
   justify-content: center;
-}
-
-.side-menu-close a {
-  text-align: center;
 }
 
 .side-menu-close span {
@@ -66,5 +73,5 @@
   font-size: 12px;
   align-items: center;
   justify-content: center;
-  background-color: #042244;
+  background-color: #313138;
 }
