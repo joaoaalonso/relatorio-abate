@@ -1,6 +1,6 @@
-export default function (input: any) {
-    if (!input.fotos || !input.fotos.length) return null
-    return input.fotos.map((foto: any) => { 
-        return { image: foto, fit: [550, 760], alignment: 'center' }
+export default function (report: any) {
+    if (!report.photos || !report.photos.length) return null
+    return report.photos.map((photo: any) => { 
+        return { image: photo, fit: [550, 760], alignment: 'center' }
     })
 }

@@ -24,7 +24,7 @@ function ClientDetails() {
     const [selectedRanch, setSelectedRanch] = useState<Ranch>()
 
     const { id } = useParams()
-    const navigate = useNavigate();
+    const navigate = useNavigate()
 
     useEffect(() => {
         fetch()

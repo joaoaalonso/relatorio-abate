@@ -1,14 +1,17 @@
+import { Report } from '../report'
 import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
 
 function renderTableWithPercentage (label: string, input: any, inputKey: string) {
     const rows: any[] = []
     input[inputKey].forEach((obj: any) => {
-        const percentil = (obj.value / input.numeroAnimais)*100
-        rows.push([
-            { text: `${obj.type}`, alignment: 'center' }, 
-            { text: `${obj.value} (${formatNumber(percentil, 1)}%)`, alignment: 'center' }, 
-        ])
+        const percentil = (obj.value / input.numberOfAnimals)*100
+        if (percentil > 0) {
+            rows.push([
+                { text: `${obj.type}`, alignment: 'center' }, 
+                { text: `${obj.value} (${formatNumber(percentil, 1)}%)`, alignment: 'center' }, 
+            ])
+        }
     })
     return {
         width: '*',
@@ -52,16 +55,16 @@ function renderSeqTable (label: string, input: any, inputKey: string, titles: st
     }
 }
 
-async function renderFetoEVacina(input: any) {
-    const valorKg = input.valorArroba ? input.valorArroba/ARROBA : null
-    const valorVacina = valorKg ? input.pesoVacina * valorKg : null
+async function renderFetoEVacina(report: any) {
+    const valorKg = report.arroba ? (report.arroba / 100)/ARROBA : null
+    const valorVacina = valorKg ? (report.vaccineWeight / 100) * valorKg : null
 
     const body = [
         [ { text: 'PESO VACINA', alignment: 'center' } ],
         [
             {
                 stack: [
-                    `${formatNumber(input.pesoVacina, 3)} KG/CBÇ`,
+                    `${formatNumber((report.vaccineWeight / 100), 3)} KG/CBÇ`,
                     `(R$ ${valorVacina ? formatNumber(valorVacina) : ''})`,
                 ],
                 alignment: 'center'
@@ -69,12 +72,12 @@ async function renderFetoEVacina(input: any) {
         ]
     ]
 
-    if (input.sexo == 'F' && Object.keys(input.fetos).length > 0) {
+    if (report.sex == 'F' && Object.keys(report.fetus).length > 0) {
         let totalFetos = 0
         const arrayFetos: any[] = []
-        if (input.sexo == 'F') {
-            input.fetos.forEach((fetos: any) => {
-                if (!!fetos.type && !!fetos.value) {
+        if (report.sex == 'F') {
+            report.fetus.forEach((fetos: any) => {
+                if (!!fetos.type && fetos.value > 0) {
                     totalFetos += parseInt(fetos.value)
                     arrayFetos.push(`${fetos.value}${fetos.type}`)
                 }
@@ -97,22 +100,22 @@ async function renderFetoEVacina(input: any) {
     }
 }
 
-export default async function(input: any) {
+export default async function(report: Report) {
     return {
         stack: [
             {
                 columns: [
-                    renderTableWithPercentage('MATURIDADE', input, 'maturidade'),
-                    renderTableWithPercentage('ACABAMENTO', input, 'acabamento'),
-                    renderTableWithPercentage('ESCORE RUMINAL', input, 'escoreRuminal'),
-                    await renderFetoEVacina(input)
+                    renderTableWithPercentage('MATURIDADE', report, 'maturity'),
+                    renderTableWithPercentage('ACABAMENTO', report, 'finishing'),
+                    renderTableWithPercentage('ESCORE RUMINAL', report, 'rumenScore'),
+                    await renderFetoEVacina(report)
                 ],
                 columnGap: 10
             },
             {
                 columns: [
-                    renderSeqTable('DIF', input, 'dif', ['MOTIVO', 'DESTINO']),
-                    renderSeqTable('HEMATOMA', input, 'hematomas', ['LOCAL', 'ORIGEM']),
+                    renderSeqTable('DIF', report, 'dif', ['MOTIVO', 'DESTINO']),
+                    renderSeqTable('HEMATOMA', report, 'bruises', ['LOCAL', 'ORIGEM']),
                 ],
                 columnGap: 10
             }

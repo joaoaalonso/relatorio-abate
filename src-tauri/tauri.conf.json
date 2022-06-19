@@ -19,6 +19,7 @@
         "readDir": true,
         "createDir": true,
         "readFile": true,
+        "removeFile": true,
         "scope": ["*"]
       },
       "dialog": {

@@ -1,12 +1,12 @@
 import formatNumber from './formatNumber'
 import { ARROBA, getSettings } from '../settings'
 
-export default async function (input: any) {
-    if (!input.valorArroba) return null
+export default async function (report: any) {
+    if (!report.arroba) return null
     const settings = await getSettings()
-    const mediaLote = input.PC / ARROBA
-    const valorBruto = input.valorArroba * input.numeroAnimais * mediaLote
-    const discount = settings.discounts.find(d => d.name == input.desconto)
+    const avg = (report.PC / 100) / ARROBA
+    const valorBruto = (report.arroba / 100) * report.numberOfAnimals * avg
+    const discount = settings.discounts.find(d => d.name == report.discountId)
     const porcentagemDesconto =  discount ? discount.value : 0
     const desconto = valorBruto * porcentagemDesconto
 
@@ -16,11 +16,11 @@ export default async function (input: any) {
 
     let valorPremiacoes = 0
     const premiacoes: any[] = []
-    input.premiacoes.forEach((premiacao: any) => {
-        if(!!premiacao.type && !!premiacao.value) {
-            const value = parseFloat(premiacao.value)
+    report.awards.forEach((award: any) => {
+        if(!!award.type && !!award.value) {
+            const value = parseFloat(award.value) / 100
             valorPremiacoes += value
-            premiacoes.push(`${premiacao.type.toUpperCase()}: R$ ${formatNumber(value)}`) 
+            premiacoes.push(`${award.type.toUpperCase()}: R$ ${formatNumber(value)}`) 
         }
     })
     const valorLiquido = valorBruto - desconto + valorPremiacoes
@@ -31,7 +31,7 @@ export default async function (input: any) {
             '\n',
             ...premiacoes,
             `VALOR BRUTO: R$ ${formatNumber(valorBruto)}`,
-            `DSCONTO ${input.desconto.toUpperCase()} (${textoPorcentagemDesconto}): R$ ${formatNumber(desconto)}`,
+            `DSCONTO ${discount?.name.toUpperCase()} (${textoPorcentagemDesconto}): R$ ${formatNumber(desconto)}`,
             `VALOR LÍQUIDO: R$ ${formatNumber(valorLiquido)}`,
         ]
     }

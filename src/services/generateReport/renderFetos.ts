@@ -1,8 +1,8 @@
 import formatNumber from './formatNumber'
 import { getSettings } from '../settings'
 
-export default async function(input: any) {
-    if (input.sexo != 'F' || Object.keys(input.fetos).length == 0) return null
+export default async function(report: any) {
+    if (report.sex != 'F' || Object.keys(report.fetus).length == 0) return null
 
     const settings = await getSettings()
     let pesoTotalFetos = 0
@@ -14,8 +14,8 @@ export default async function(input: any) {
             weight: f.weight
         }
     })
-    input.fetos.forEach((fetos: any) => {
-        if (!!fetos.type && !!fetos.value) {
+    report.fetus.forEach((fetos: any) => {
+        if (!!fetos.type && fetos.value > 0) {
             const type: 'P' | 'M' | 'G' = fetos.type
             pesoTotalFetos += fetus[fetos.type].weight * fetos.value
             descricaoFetos.push(`${fetos.value} FETOS DE TAMANHO ${type} ${fetus[fetos.type].age} COM MÉDIA DE ${fetus[fetos.type].weight} KG`)
@@ -24,9 +24,11 @@ export default async function(input: any) {
     
     if (!pesoTotalFetos) return null
 
-    const pesoMedioFeto = pesoTotalFetos/input.numeroAnimais
-    const RCAjustado = (input.PC/(input.PV - pesoMedioFeto))*100
-    const PVAjustado = (input.PV - pesoMedioFeto)
+    const PC = report.PC / 100
+    const PV = report.PV / 100
+    const pesoMedioFeto = pesoTotalFetos/report.numberOfAnimals
+    const RCAjustado = (PC/(PV - pesoMedioFeto))*100
+    const PVAjustado = (PV - pesoMedioFeto)
 
     return {
         stack: [

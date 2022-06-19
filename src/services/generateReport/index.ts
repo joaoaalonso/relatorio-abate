@@ -1,3 +1,5 @@
+import formatDate from 'date-fns/format'
+import ptBr from 'date-fns/locale/pt-BR'
 import pdfMake from 'pdfmake/build/pdfmake'
 import { writeBinaryFile } from '@tauri-apps/api/fs'
 
@@ -12,7 +14,30 @@ import renderAssinatura from './renderAssinatura'
 import renderAvaliacaoAbate from './renderAvaliacaoAbate'
 import renderPesoRendimento from './renderPesoRendimento'
 
-export default async function(input: any, path: string): Promise<boolean> {
+import { 
+    getDif, 
+    getFetus, 
+    getPhotos, 
+    getAwards, 
+    getBruises, 
+    getMaturity, 
+    getFinishing, 
+    getReportById, 
+    getRumenScore
+} from '../report'
+
+export default async function(reportId: number, path: string): Promise<boolean> {
+    const report = await getReportById(reportId)
+    
+    report.dif = await getDif(reportId)
+    report.fetus = await getFetus(reportId)
+    report.awards = await getAwards(reportId)
+    report.photos = await getPhotos(reportId)
+    report.bruises = await getBruises(reportId)
+    report.maturity = await getMaturity(reportId)
+    report.finishing = await getFinishing(reportId)
+    report.rumenScore = await getRumenScore(reportId)
+
     const docDefinitions: any = {
         pageSize: 'A4',
         defaultStyle: {
@@ -38,27 +63,27 @@ export default async function(input: any, path: string): Promise<boolean> {
                             {},
                             {
                                 
-                                text: `DATA: ${input.data}`,
+                                text: `DATA: ${formatDate(new Date(report.date), 'dd/MM/yyyy', { locale: ptBr })}`,
                                 alignment: 'center'
                             }
                         ],
                         [
-                            await renderDados(input), {},
-                            await renderValorMedia(input), {}
+                            await renderDados(report), {},
+                            await renderValorMedia(report), {}
                         ],
                         [
                             { text: 'AVALIAÇÃO DO CURRAL', alignment: 'center', colSpan: 2 }, {},
-                            { text: `PESO TOTAL: ${formatNumber(input.PC*input.numeroAnimais)} KG`, alignment: 'center', colSpan: 2 }, {}
+                            { text: `PESO TOTAL: ${formatNumber((report.PC / 100)*report.numberOfAnimals)} KG`, alignment: 'center', colSpan: 2 }, {}
                         ],
                         [
-                            { text: input.avaliacaoCurral.toUpperCase(), colSpan: 2}, {},
-                            renderPesoRendimento(input), {}
+                            { text: report.corralEvaluation.toUpperCase(), colSpan: 2}, {},
+                            renderPesoRendimento(report), {}
                         ],
                         [
                             { text: 'AVALIAÇÃO DO ABATE', alignment: 'center', colSpan: 4 }, {}, {}, {}
                         ],
                         [
-                            await renderAvaliacaoAbate(input), {}, {}, {}
+                            await renderAvaliacaoAbate(report), {}, {}, {}
                         ]
                     ]
                 }
@@ -71,21 +96,21 @@ export default async function(input: any, path: string): Promise<boolean> {
                         {
                             stack: [
                                 'Observações adicionais:',
-                                input.observacoes?.toUpperCase() || '\n'
+                                report.comments?.toUpperCase() || '\n'
                             ]
                         }
                     ]]
                 }
             },
             {text: '\n'},
-            await renderFetos(input),
+            await renderFetos(report),
             {text: '\n'},
             {text: '\n'},
-            await renderAcerto(input),
+            await renderAcerto(report),
             {text: '\n'},
             {text: '\n'},
-            renderAssinatura(input),
-            renderPhotos(input)
+            renderAssinatura(report),
+            renderPhotos(report)
         ]
     }
 

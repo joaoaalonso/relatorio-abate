@@ -1,10 +1,11 @@
+import { Report } from '../report'
 import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
 
-export default async function (input: any) {
-    const mediaLote = input.PC / ARROBA
+export default async function (report: Report) {
+    const avg = (report.PC / 100) / ARROBA
     
-    let value = input.valorArroba ? formatNumber(input.valorArroba) : ''
+    let value = report.arroba ? formatNumber(report.arroba) : ''
 
     return {
         stack: [
@@ -12,7 +13,7 @@ export default async function (input: any) {
             '\n',
             `R$ ${value}`,
             '\n',
-            `MÉDIA LOTE: ${formatNumber(mediaLote)}@`
+            `MÉDIA LOTE: ${formatNumber(avg)}@`
         ],
         colSpan: 2
     }

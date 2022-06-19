@@ -1,13 +1,16 @@
+import { Report } from '../report'
 import formatNumber from './formatNumber'
 
-export default function (input: any) {
-    const RC = (input.PC/input.PV)*100
+export default function (report: Report) {
+    const PC = report.PC / 100
+    const PV = report.PV / 100
+    const RC = (PC/PV)*100
     
     return {
         stack: [
-            `PV: ${formatNumber(input.PV)} KG`,
+            `PV: ${formatNumber(PV)} KG`,
             '\n',
-            `PC: ${formatNumber(input.PC)} KG`,
+            `PC: ${formatNumber(PC)} KG`,
             '\n',
             `RC: ${formatNumber(RC, 1)} %`
         ],

@@ -18,7 +18,7 @@ function SideMenu() {
             <div className="logo">
                 <img src={logo} />
             </div>
-            <NavLink to='/invoices'>
+            <NavLink to='/reports'>
                 <HiOutlineDocumentReport size={ICON_SIZE} /><span>Relatório</span>
             </NavLink>
             <NavLink to='/clients'>

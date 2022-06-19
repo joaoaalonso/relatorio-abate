@@ -1,7 +1,7 @@
 import { Routes as ReactRoutes, Route, Navigate } from 'react-router-dom'
 
-import InvoiceList from './screens/invoices/List'
-import InvoiceForm from './screens/invoices/Form'
+import ReportList from './screens/invoices/List'
+import ReportForm from './screens/invoices/Form'
 
 import ClientList from './screens/clients/List'
 import ClientDetails from './screens/clients/Details'
@@ -14,8 +14,9 @@ import SettingsScreen from './screens/Settings'
 function Routes() {
     return (
         <ReactRoutes>
-            <Route path='/invoices' element={<InvoiceList />} />
-            <Route path='/invoices/add' element={<InvoiceForm />} />
+            <Route path='/reports' element={<ReportList />} />
+            <Route path='/reports/add' element={<ReportForm />} />
+            <Route path='/reports/:id' element={<ReportForm />} />
 
             <Route path='/clients' element={<ClientList />} />
             <Route path='/clients/:id' element={<ClientDetails />} />
@@ -25,7 +26,7 @@ function Routes() {
             
             <Route path='/settings' element={<SettingsScreen />} />
 
-            <Route path='*' element={<Navigate to='/invoices' />} />
+            <Route path='*' element={<Navigate to='/reports' />} />
         </ReactRoutes>
     )
 }

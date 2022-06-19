@@ -1,5 +1,7 @@
 import Database from 'tauri-plugin-sql-api'
 
-export const getInstance = () => {
+export type DB = Database
+
+export const getInstance = (): Promise<DB> => {
     return Database.load('sqlite:main.db')
 }

@@ -1,10 +1,11 @@
 import swal from 'sweetalert'
+import { useForm } from 'react-hook-form'
 import formatDate from 'date-fns/format'
 import ptBr from 'date-fns/locale/pt-BR'
-import { useForm } from 'react-hook-form'
 import { useState, useEffect } from 'react'
 import { save } from '@tauri-apps/api/dialog'
-import { BiPlus, BiTrash } from 'react-icons/bi'
+import { useNavigate, useParams } from 'react-router-dom'
+import { BiDownload, BiPlus, BiTrash } from 'react-icons/bi'
 
 import Table from '../../components/Table'
 import Button from '../../components/Button'
@@ -13,95 +14,177 @@ import Photos from '../../components/Photos'
 import Loading from '../../components/Loading'
 import TextField from '../../components/TextField'
 import DatePicker from '../../components/DatePicker'
-import { getSettings } from '../../services/settings'
 import ScreenTemplate from '../../components/ScreenTemplate'
 
-import { getRanches, Ranch } from '../../services/ranches'
 import generateReport from '../../services/generateReport'
+import { getRanches, Ranch } from '../../services/ranches'
 import { Client, getClients } from '../../services/clients'
-import { getSlaughterhouses, getSlaughterhouseUnits } from '../../services/slaughterhouse'
+import { Discount, getSettings } from '../../services/settings'
+import { 
+    Slaughterhouse,
+    getSlaughterhouses,
+    SlaughterhouseUnit,
+    getSlaughterhouseUnits
+} from '../../services/slaughterhouse'
+import { 
+    Report,
+    getDif, 
+    getFetus, 
+    getAwards, 
+    getBruises, 
+    getMaturity, 
+    createReport, 
+    getFinishing, 
+    getReportById, 
+    getRumenScore,
+    ObjectTypeValue,
+    ObjectSeqTypeValue,
+    getPhotos,
+    updateReport,
+    deleteReport
+} from '../../services/report'
 
-function InvoiceForm() {
+
+function ReportForm() {
     const [loading, setLoading] = useState(false)
     const [isFemale, setIsFemale] = useState(true)
 
     const [clients, setClients] = useState<Client[]>([])
     const [ranches, setRanches] = useState<Ranch[]>([])
-    const [slaughterhouses, setSlaughterhouses] = useState<any[]>([])
-    const [slaughterhouseUnits, setSlaughterhouseUnits] = useState<any[]>([])
+    const [discounts, setDiscounts] = useState<Discount[]>([])
+    const [slaughterhouses, setSlaughterhouses] = useState<Slaughterhouse[]>([])
+    const [slaughterhouseUnits, setSlaughterhouseUnits] = useState<SlaughterhouseUnit[]>([])
 
-    const [maturidade, setMaturidade] = useState<any[]>([{ type: '', value: '' }])
-    const [acabamento, setAcabamento] = useState<any[]>([{ type: '', value: '' }])
-    const [escoreRuminal, setEscoreRuminal] = useState<any[]>([{ type: '', value: '' }])
-    const [premiacoes, setPremiacoes] = useState<any[]>([{ type: '', value: '' }])
-    const [fetos, setFetos] = useState<any[]>([
+    const [maturity, setMaturity] = useState<ObjectTypeValue[]>([
+        { type: '0', value: '0' },
+        { type: '2', value: '0' },
+        { type: '4', value: '0' },
+        { type: '6', value: '0' },
+        { type: '8', value: '0' },
+    ])
+    const [finishing, setFinishing] = useState<ObjectTypeValue[]>([
+        { type: '1', value: '0' },
+        { type: '2', value: '0' },
+        { type: '3', value: '0' },
+        { type: '4', value: '0' },
+        { type: '5', value: '0' },
+    ])
+    const [rumenScore, setRumenScore] = useState<ObjectTypeValue[]>([
+        { type: '1', value: '0' },
+        { type: '2', value: '0' },
+        { type: '3', value: '0' },
+        { type: '4', value: '0' },
+        { type: '5', value: '0' },
+    ])
+    const [awards, setAwards] = useState<ObjectTypeValue[]>([{ type: '', value: '' }])
+    const [fetus, setFetus] = useState<ObjectTypeValue[]>([
         { type: 'P', value: '0' },
         { type: 'M', value: '0' },
         { type: 'G', value: '0' },
     ])
-
-    const [dif, setDif] = useState<any[]>([{ seq: '', type: '', value: '' }])
-    const [hematomas, setHematomas] = useState<any[]>([{ seq: '', type: '', value: '' }])
-
-    const [fotos, setFotos] = useState<string[]>([])
-
-    const [discounts, setDiscounts] = useState<string[]>([])
-    const [fetalSizes, setFetalSizes] = useState<string[]>([])
     
+    const [dif, setDif] = useState<ObjectSeqTypeValue[]>([{ seq: '', type: '', value: '' }])
+    const [bruises, setBruises] = useState<ObjectSeqTypeValue[]>([{ seq: '', type: '', value: '' }])
+    
+    const [photos, setPhotos] = useState<string[]>([])
+    
+    const { id } = useParams()
+    const navigate = useNavigate()
+
     const {
         register,
         handleSubmit,
         watch,
         setValue,
+        getValues,
+        reset,
         control,
         formState: { errors }
     } = useForm({
         defaultValues: {
-            data: new Date(),
-            unidadeAbatedoura: '',
-            municipioUnidadeAbatedoura: '',
-            proprietario: '',
-            propriedade: '',
-            municipioPropriedade: '',
-            numeroAnimais: '',
-            sexo: 'F',
-            lote: '',
-            curral: '',
-            sequencial: '',
-            valorArroba: '',
-            desconto: '',
-            pesoVacina: '',
+            date: new Date(),
+            slaughterhouseId: '',
+            slaughterhouseUnitId: '',
+            clientId: '',
+            ranchId: '',
+            ranchCity: '',
+            discountId: '',
+            numberOfAnimals: '',
+            sex: 'F',
+            batch: '',
+            breed: '',
+            cattleShed: '',
+            sequential: '',
+            arroba: '',
+            vaccineWeight: '',
             PV: '',
             PC: '',
-            avaliacaoCurral: '',
-            observacoes: ''
+            corralEvaluation: '',
+            comments: ''
         }
     })
+
+    useEffect(() => {
+        if (id) {
+            const reportId = parseInt(id)
+            getReportById(reportId)
+                .then(report => {
+                    reset({
+                        date: new Date(),
+                        slaughterhouseId: `${report.slaughterhouseId}`,
+                        slaughterhouseUnitId: `${report.slaughterhouseUnitId}`,
+                        clientId: `${report.clientId}`,
+                        ranchId: `${report.ranchId}`,
+                        ranchCity: ranches.find(r => r.id === parseInt(id))?.city || '',
+                        numberOfAnimals: `${report.numberOfAnimals}`,
+                        sex: report.sex,
+                        batch: report.batch,
+                        breed: report.breed,
+                        cattleShed: report.cattleShed,
+                        sequential: report.sequential,
+                        arroba: report.arroba ? (report.arroba / 100).toString().replace('.', ',') : '',
+                        discountId: `${report.discountId}`,
+                        vaccineWeight: (report.vaccineWeight / 100).toString().replace('.', ','),
+                        PV: (report.PV / 100).toString().replace('.', ','),
+                        PC: (report.PC / 100).toString().replace('.', ','),
+                        corralEvaluation: report.corralEvaluation,
+                        comments: report.comments || ''
+                    })
+                })
+            getMaturity(reportId).then(setMaturity)
+            getFinishing(reportId).then(setFinishing)
+            getRumenScore(reportId).then(setRumenScore)
+            getFetus(reportId).then(setFetus)
+            getDif(reportId).then(setDif)
+            getBruises(reportId).then(setBruises)
+            getAwards(reportId).then(setAwards)
+            getPhotos(reportId).then(setPhotos)
+        }
+    }, [id])
 
     useEffect(() => {
         getClients().then(c => {
             if (c.length) {
                 setClients(c),
-                setValue('proprietario', `${c[0].id}`)
+                setValue('clientId', `${c[0].id}`)
             }
         })
         getSlaughterhouses().then(s => {
             if (s.length) {
                 setSlaughterhouses(s)
-                setValue('unidadeAbatedoura', `${s[0].id}`)
+                setValue('slaughterhouseId', `${s[0].id}`)
             }
         })
         getSettings()
             .then(settings => {
-                setDiscounts(settings.discounts.map(d => d.name))
-                setFetalSizes(settings.fetus.map(fetus => fetus.size))
+                setDiscounts(settings.discounts)
             })
     }, [])
 
-    const watchSex = watch('sexo')
-    const watchClient = watch('proprietario')
-    const watchRanch = watch('propriedade')
-    const watchSlaughterhouse = watch('unidadeAbatedoura')
+    const watchSex = watch('sex')
+    const watchClient = watch('clientId')
+    const watchRanch = watch('ranchId')
+    const watchSlaughterhouse = watch('slaughterhouseId')
 
     useEffect(() => {
         setIsFemale(watchSex === 'F')
@@ -112,7 +195,7 @@ function InvoiceForm() {
             getRanches(parseInt(watchClient)).then(r => {
                 setRanches(r)
                 if (r.length) {
-                    setValue('propriedade', `${r[0].id}`)
+                    setValue('ranchId', `${r[0].id}`)
                 }
             })
         }
@@ -120,7 +203,7 @@ function InvoiceForm() {
 
     useEffect(() => {
         if (watchRanch) {
-            setValue('municipioPropriedade', ranches.find(r => r.id === parseInt(watchRanch))?.city || '')
+            setValue('ranchCity', ranches.find(r => r.id === parseInt(watchRanch))?.city || '')
         }
     }, [watchRanch])
 
@@ -129,46 +212,126 @@ function InvoiceForm() {
             getSlaughterhouseUnits(parseInt(watchSlaughterhouse)).then(s => {
                 setSlaughterhouseUnits(s)
                 if (s.length) {
-                    setValue('municipioUnidadeAbatedoura', `${s[0].id}`)
+                    setValue('slaughterhouseUnitId', `${s[0].id}`)
                 }
             })
         }
     }, [watchSlaughterhouse])
 
     function parseNumber(number: string) {
-        return parseFloat(number.replace(',', '.'))
+        return parseFloat(number.replace(',', '.')) * 100
     }
 
     function onSubmit(data: any) {
-        const input = {
-            ...data,
-            data: formatDate(data.data, 'dd/MM/yyyy', { locale: ptBr }),
-            valorArroba: data.valorArroba ? parseNumber(data.valorArroba) : '',
+        const input: Report = {
+            date: data.date,
+            slaughterhouseId: parseInt(data.slaughterhouseId),
+            slaughterhouseUnitId: parseInt(data.slaughterhouseUnitId),
+            clientId: parseInt(data.clientId),
+            ranchId: parseInt(data.ranchId),
+            numberOfAnimals: parseInt(data.numberOfAnimals),
+            sex: data.sex,
+            batch: data.batch,
+            breed: data.breed,
+            cattleShed: data.cattleShed,
+            sequential: data.sequential,
+            arroba: data.arroba ? parseNumber(data.arroba) : undefined,
+            discountId: parseInt(data.discountId),
+            vaccineWeight: parseNumber(data.vaccineWeight),
             PV: parseNumber(data.PV),
             PC: parseNumber(data.PC),
-            pesoVacina: parseNumber(data.pesoVacina),
-            maturidade,
-            acabamento,
-            escoreRuminal,
-            fetos,
+            corralEvaluation: data.corralEvaluation,
+            comments: data.comments,
+            photos,
+            maturity,
+            finishing,
+            rumenScore,
+            fetus,
             dif,
-            hematomas,
-            fotos,
-            premiacoes
+            bruises,
+            awards
         }
         
+        swal({
+            text: 'Deseja realmente salvar esse relatório?',
+            icon: 'warning',
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: 'Não'
+                },
+                confirm: {
+                    text: 'Sim',
+                },
+            },
+            dangerMode: true,
+        })
+        .then(confirm => {
+            if (confirm) {
+                if (id) {
+                    updateReport(parseInt(id), input)
+                        .then(() => {
+                            swal('', 'Relatório atualizado com sucesso!', 'success')
+                            navigate(`/reports/${id}`)
+                        })
+                        .catch(e => { swal('', e, 'error') })
+                        .finally(() => { setLoading(false) })
+                } else {
+                    createReport(input)
+                        .then(reportId => {
+                            swal('', 'Relatório gerado com sucesso!', 'success')
+                            navigate(`/reports/${reportId}`)
+                        })
+                        .catch(e => { swal('', e, 'error') })
+                        .finally(() => { setLoading(false) })
+                }
+            }
+        })
+    }
+
+    function removeReport() {
+        if (!id) return
+        swal({
+            text: 'Deseja realmente delete esse relatório?',
+            icon: 'warning',
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: 'Não'
+                },
+                confirm: {
+                    text: 'Sim',
+                },
+            },
+            dangerMode: true,
+        })
+        .then(confirm => {
+            if (confirm) {
+                deleteReport(parseInt(id))
+                    .then(() => { swal('', 'Relatório deletado com sucesso!', 'success') })
+                    .then(() => navigate('/reports'))
+                    .catch(swal)
+            }
+        })
+    }
+
+    function downloadReport() {
+        const [ranchId, date] = getValues(['ranchId', 'date'])
+        const ranch = ranches.find(ranch => ranch.id == parseInt(ranchId))
+        const formattedDate = formatDate(new Date(date), 'dd-MM-yyyy', { locale: ptBr })
+        const defaultPath = `${ranch?.name} ${formattedDate}.pdf`
         save({
             title: 'Onde deseja salvar o relatório?',
-            defaultPath: `${input.proprietario.toLowerCase()} ${input.data.replaceAll('/', '-')} ${input.sexo}.pdf`,
+            defaultPath: defaultPath,
             filters: [{name: 'PDF', extensions: ['pdf']}]
         })
         .then(path => {
             if (!path) return false
             setLoading(true)
-            return generateReport(input, path)
+            return generateReport(parseInt(id || '0'), path)
         })
         .then(success => {
-            success && swal('', 'Relatório gerado com sucesso!', 'success')
+            success && swal('', 'Relatório salvo com sucesso!', 'success')
         })
         .catch(e => {
             swal('', e.message, 'error')
@@ -180,13 +343,13 @@ function InvoiceForm() {
 
     function resetForm() {
         setIsFemale(true)
-        setMaturidade([{ type: '', value: '' }])
-        setAcabamento([{ type: '', value: '' }])
-        setEscoreRuminal([{ type: '', value: '' }])
-        setFetos([{ type: '', value: '' }])
+        setMaturity([{ type: '', value: '' }])
+        setFinishing([{ type: '', value: '' }])
+        setRumenScore([{ type: '', value: '' }])
+        setFetus([{ type: '', value: '' }])
         setDif([{ seq: '', type: '', value: '' }])
-        setHematomas([{ seq: '', type: '', value: '' }])
-        setFotos([])
+        setBruises([{ seq: '', type: '', value: '' }])
+        setPhotos([])
     }
 
     function addTableRow(table: any[], setTable: any, threeColumns: boolean = false) {
@@ -215,8 +378,22 @@ function InvoiceForm() {
         setTable(newTable)
     }
 
+    function renderTopBarButtons() {
+        if (!id) return <></>
+        return (
+            <div className="row">
+                <BiDownload onClick={downloadReport} size={25} className='svg-button' />
+                {<BiTrash onClick={removeReport} size={25} className='svg-button' />}
+            </div>
+        )
+    }
+
     return (
-        <ScreenTemplate title='Criar relatório' backLink='/'>
+        <ScreenTemplate
+            title={`${id ? 'Editar' : 'Criar'} relatório`}
+            backLink='/'
+            rightComponent={renderTopBarButtons()}
+        >
             <>
                 <Loading loading={loading} text='Gerando relatório...' />
                 <form onSubmit={handleSubmit(onSubmit)}>
@@ -224,19 +401,19 @@ function InvoiceForm() {
                         <div className='column'>
                             <DatePicker
                                 label="Data"
-                                name="data"
+                                name="date"
                                 control={control}
                                 errors={errors}
                                 required
                             />
                         </div>
                         <div className='column'>
-                            <Select label='Unidade' name='unidadeAbatedoura' control={control} errors={errors} options={
+                            <Select label='Unidade' name='slaughterhouseId' control={control} errors={errors} options={
                                 slaughterhouses.map(s => ({ value: `${s.id}`, label: s.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <Select label='Município' name='municipioUnidadeAbatedoura' control={control} errors={errors} options={
+                            <Select label='Município' name='slaughterhouseUnitId' control={control} errors={errors} options={
                                 slaughterhouseUnits.map(s => ({ value: `${s.id}`, label: s.city }))
                             } required />
                         </div>
@@ -244,72 +421,72 @@ function InvoiceForm() {
 
                     <div className='row'>
                         <div className='column'>
-                            <Select label='Proprietário' name='proprietario' control={control} errors={errors} options={
+                            <Select label='Proprietário' name='clientId' control={control} errors={errors} options={
                                 clients.map(client => ({ value: `${client.id}`, label: client.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <Select label='Propriedade' name='propriedade' control={control} errors={errors} options={
+                            <Select label='Propriedade' name='ranchId' control={control} errors={errors} options={
                                 ranches.map(ranch => ({ value: `${ranch.id}`, label: ranch.name }))
                             } required />
                         </div>
                         <div className='column'>
-                            <TextField name='municipioPropriedade' label='Município' register={register} errors={errors} required disabled />
+                            <TextField label='Município' name='ranchCity' register={register} errors={errors} required disabled />
                         </div>
                     </div>
                     
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='numeroAnimais' label='Nº de animais' type='integer' register={register} errors={errors} required />
-                            <Select label='Sexo' name='sexo' control={control} errors={errors} options={[
-                                {value: 'F', label: 'F'},
-                                {value: 'MI', label: 'MI'},
-                                {value: 'MC', label: 'MC'},
-                                {value: 'MI/MC', label: 'MI/MC'}
+                            <TextField label='Nº de animais' name='numberOfAnimals' type='integer' register={register} errors={errors} required />
+                            <Select label='Sexo' name='sex' control={control} errors={errors} options={[
+                                {value: 'F', label: 'Fêmea'},
+                                {value: 'MI', label: 'Macho inteiro'},
+                                {value: 'MC', label: 'Macho castrado'},
+                                {value: 'MI/MC', label: 'Macho inteiro/castrado'}
                             ]} required />
                         </div>
                         <div className='column'>
-                            <TextField name='lote' label='Lote' register={register} errors={errors} required />
-                            <TextField name='curral' label='Curral' register={register} errors={errors} required />
+                            <TextField label='Lote' name='batch' register={register} errors={errors} required />
+                            <TextField label='Curral' name='cattleShed' register={register} errors={errors} required />
                             
                         </div>
                         <div className='column'>
-                            <TextField name='sequencial' label='Sequencial' register={register} errors={errors} required />
-                            <TextField name='raca' label='Raça' register={register} errors={errors} required />
+                            <TextField label='Sequencial' name='sequential' register={register} errors={errors} required />
+                            <TextField label='Raça' name='breed' register={register} errors={errors} required />
                         </div>
                     </div>
 
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='valorArroba' label='Valor da arroba' type='decimal' register={register} errors={errors} />
+                            <TextField label='Valor da arroba' name='arroba' type='decimal' register={register} errors={errors} />
                         </div>
                         <div className='column'>
                             <Select 
                                 label='Desconto' 
-                                name='desconto' 
+                                name='discountId' 
                                 control={control} 
                                 errors={errors} 
                                 options={discounts.map(discount => {
-                                    return { value: discount, label: discount }
+                                    return { value: `${discount.id}`, label: discount.name }
                                 })} 
                                 required 
                             />
                         </div>
                         <div className='column'>
-                            <TextField name='pesoVacina' label='Peso da vacina' type='decimal' register={register} errors={errors} required />
+                            <TextField label='Peso da vacina' name='vaccineWeight' type='decimal' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
-                            <TextField name='PV' label='PV' type='decimal' register={register} errors={errors} required />
+                            <TextField label='PV' name='PV' type='decimal' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
-                            <TextField name='PC' label='PC' type='decimal' register={register} errors={errors} required />
+                            <TextField label='PC' name='PC' type='decimal' register={register} errors={errors} required />
                         </div>
                     </div>
 
                     <div className='row'>
                         <div className='column'>
-                            <TextField name='avaliacaoCurral' label='Avaliação do curral' type='textarea' register={register} errors={errors} required />
-                            <TextField name='observacoes' label='Observações' type='textarea' register={register} errors={errors} />
+                            <TextField label='Avaliação do curral' name='corralEvaluation' type='textarea' register={register} errors={errors} required />
+                            <TextField label='Observações' name='comments' type='textarea' register={register} errors={errors} />
                         </div>
                     </div>
 
@@ -320,16 +497,14 @@ function InvoiceForm() {
                                     <tr>
                                         <th>Dentição</th>
                                         <th>Nº de animais</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(maturidade, setMaturidade)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {maturidade.map((elem, index) => {
+                                    {maturity.map((elem, index) => {
                                         return (
-                                            <tr key={`maturidade-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(maturidade, setMaturidade, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField onChange={(value) => updateTableRow(maturidade, setMaturidade, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(maturidade, setMaturidade, index)} /></td>
+                                            <tr key={`maturity-${index}`}>
+                                                <td>{elem.type}</td>
+                                                <td><TextField onChange={(value) => updateTableRow(maturity, setMaturity, index, 'value', value)} value={elem.value} /></td>
                                             </tr>
                                         )
                                     })}
@@ -343,16 +518,14 @@ function InvoiceForm() {
                                     <tr>
                                         <th>Número</th>
                                         <th>Nº de animais</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(acabamento, setAcabamento)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {acabamento.map((elem, index) => {
+                                    {finishing.map((elem, index) => {
                                         return (
-                                            <tr key={`acabamento-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(acabamento, setAcabamento, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField onChange={(value) => updateTableRow(acabamento, setAcabamento, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(acabamento, setAcabamento, index)} /></td>
+                                            <tr key={`finishing-${index}`}>
+                                                <td>{elem.type}</td>
+                                                <td><TextField onChange={(value) => updateTableRow(finishing, setFinishing, index, 'value', value)} value={elem.value} /></td>
                                             </tr>
                                         )
                                     })}
@@ -366,22 +539,41 @@ function InvoiceForm() {
                                     <tr>
                                         <th>Número</th>
                                         <th>Nº de animais</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(escoreRuminal, setEscoreRuminal)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {escoreRuminal.map((elem, index) => {
+                                    {rumenScore.map((elem, index) => {
                                         return (
-                                            <tr key={`escore-ruminal-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(escoreRuminal, setEscoreRuminal, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField onChange={(value) => updateTableRow(escoreRuminal, setEscoreRuminal, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(escoreRuminal, setEscoreRuminal, index)} /></td>
+                                            <tr key={`rumen-score-${index}`}>
+                                                <td>{elem.type}</td>
+                                                <td><TextField onChange={(value) => updateTableRow(rumenScore, setRumenScore, index, 'value', value)} value={elem.value} /></td>
                                             </tr>
                                         )
                                     })}
                                 </tbody>
                             </>
                         </Table>
+
+                        { isFemale && <Table title='Fetos'>
+                            <>
+                                <thead>
+                                    <tr>
+                                        <th>Tamanho</th>
+                                        <th>Quantidade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {fetus.map((elem, index) => {
+                                        return (
+                                            <tr key={`fetus-${index}`}>
+                                                <td>{elem.type}</td>
+                                                <td><TextField onChange={(value) => updateTableRow(fetus, setFetus, index, 'value', value)} value={elem.value} /></td>
+                                            </tr>
+                                        )
+                                    })}
+                                </tbody>
+                            </>
+                        </Table>}
                     </div>
 
                     <div className='row'>
@@ -417,44 +609,23 @@ function InvoiceForm() {
                                         <th>Seq.</th>
                                         <th>Local</th>
                                         <th>Origem</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(hematomas, setHematomas, true)} /></th>
+                                        <th><BiPlus size={15} onClick={() => addTableRow(bruises, setBruises, true)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {hematomas.map((elem, index) => {
+                                    {bruises.map((elem, index) => {
                                         return (
-                                            <tr key={`hematomas-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(hematomas, setHematomas, index, 'seq', value)} value={elem.seq} /></td>
-                                                <td><TextField onChange={(value) => updateTableRow(hematomas, setHematomas, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField onChange={(value) => updateTableRow(hematomas, setHematomas, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(hematomas, setHematomas, index, true)} /></td>
+                                            <tr key={`bruises-${index}`}>
+                                                <td><TextField onChange={(value) => updateTableRow(bruises, setBruises, index, 'seq', value)} value={elem.seq} /></td>
+                                                <td><TextField onChange={(value) => updateTableRow(bruises, setBruises, index, 'type', value)} value={elem.type} /></td>
+                                                <td><TextField onChange={(value) => updateTableRow(bruises, setBruises, index, 'value', value)} value={elem.value} /></td>
+                                                <td><BiTrash onClick={() => removeTableRow(bruises, setBruises, index, true)} /></td>
                                             </tr>
                                         )
                                     })}
                                 </tbody>
                             </>
                         </Table>
-                        
-                        { isFemale && <Table title='Fetos'>
-                            <>
-                                <thead>
-                                    <tr>
-                                        <th>Tamanho</th>
-                                        <th>Quantidade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {fetos.map((elem, index) => {
-                                        return (
-                                            <tr key={`fetos-${index}`}>
-                                                <td>{elem.type}</td>
-                                                <td><TextField onChange={(value) => updateTableRow(fetos, setFetos, index, 'value', value)} value={elem.value} /></td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </>
-                        </Table>}
                     </div>
 
                     <div className='row'>
@@ -464,16 +635,16 @@ function InvoiceForm() {
                                     <tr>
                                         <th>Nome</th>
                                         <th>Valor</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(premiacoes, setPremiacoes)} /></th>
+                                        <th><BiPlus size={15} onClick={() => addTableRow(awards, setAwards)} /></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {premiacoes.map((elem, index) => {
+                                    {awards.map((elem, index) => {
                                         return (
-                                            <tr key={`premiacoes-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField type='decimal' onChange={(value) => updateTableRow(premiacoes, setPremiacoes, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(premiacoes, setPremiacoes, index)} /></td>
+                                            <tr key={`awards-${index}`}>
+                                                <td><TextField onChange={(value) => updateTableRow(awards, setAwards, index, 'type', value)} value={elem.type} /></td>
+                                                <td><TextField type='decimal' onChange={(value) => updateTableRow(awards, setAwards, index, 'value', value)} value={elem.value} /></td>
+                                                <td><BiTrash onClick={() => removeTableRow(awards, setAwards, index)} /></td>
                                             </tr>
                                         )
                                     })}
@@ -483,12 +654,12 @@ function InvoiceForm() {
                     </div>
 
                     <div className='row'>
-                        <Photos photos={fotos} setPhotos={setFotos} />
+                        <Photos photos={photos} setPhotos={setPhotos} />
                     </div>
 
                     <div className='row'>
-                        <Button type="reset" onClick={resetForm} variant='primary' text='Limpar formulário' />
-                        <Button type='submit' variant='secondary' text='Gerar relatório' />
+                        {!id && <Button type="reset" onClick={resetForm} variant='primary' text='Limpar formulário' />}
+                        <Button type='submit' variant='secondary' text='Salvar relatório' />
                     </div>
                 </form>
             </>
@@ -496,4 +667,4 @@ function InvoiceForm() {
     )
 }
 
-export default InvoiceForm
+export default ReportForm

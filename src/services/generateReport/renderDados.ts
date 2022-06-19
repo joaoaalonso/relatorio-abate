@@ -1,14 +1,14 @@
+import { Report } from '../report'
 import { getRanchById } from '../ranches'
 import { getClientById } from '../clients'
 import { getSlaughterhouseById, getSlaughterhouseUnitById } from '../slaughterhouse'
-import swal from 'sweetalert'
 
-export default async function (input: any) {
+export default async function (report: Report) {
     const [client, ranch, slaughterhouse, slaughterhouseUnit] = await Promise.all([
-        getClientById(parseInt(input.proprietario)),
-        getRanchById(parseInt(input.propriedade)),
-        getSlaughterhouseById(parseInt(input.unidadeAbatedoura)),
-        getSlaughterhouseUnitById(parseInt(input.municipioUnidadeAbatedoura))
+        getClientById(report.clientId),
+        getRanchById(report.ranchId),
+        getSlaughterhouseById(report.slaughterhouseId),
+        getSlaughterhouseUnitById(report.slaughterhouseUnitId)
     ])
 
     return {
@@ -16,23 +16,23 @@ export default async function (input: any) {
             body: [
                 [
                     `UNIDADE ABATEDOURA: ${slaughterhouse.name.toUpperCase()}`, 
-                    `Nº DE ANIMAIS: ${input.numeroAnimais}`
+                    `Nº DE ANIMAIS: ${report.numberOfAnimals}`
                 ],
                 [
                     `MUNICÍPIO: ${slaughterhouseUnit.city.toUpperCase()}`,
-                    `LOTE: ${input.lote}\tCURRAL: ${input.curral}`
+                    `LOTE: ${report.batch}\tCURRAL: ${report.cattleShed}`
                 ],
                 [
                     `PROPRIETÁRIO: ${client.name.toUpperCase()}`,
-                    `SEQUENCIAL: ${input.sequencial}`
+                    `SEQUENCIAL: ${report.sequential}`
                 ],
                 [
                     `PROPRIEDADE: ${ranch.name.toUpperCase()}`,
-                    `RAÇA: ${input.raca.toUpperCase()}`
+                    `RAÇA: ${report.breed.toUpperCase()}`
                 ],
                 [
                     `MUNÍCIPIO: ${ranch.city.toUpperCase()}`,
-                    `SEXO: ${input.sexo.toUpperCase()}`
+                    `SEXO: ${report.sex.toUpperCase()}`
                 ],
             ]
         },
