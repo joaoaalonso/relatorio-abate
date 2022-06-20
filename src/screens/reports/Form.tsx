@@ -136,7 +136,7 @@ function ReportForm() {
                         slaughterhouseUnitId: `${report.slaughterhouseUnitId}`,
                         clientId: `${report.clientId}`,
                         ranchId: `${report.ranchId}`,
-                        ranchCity: ranches.find(r => r.id === parseInt(id))?.city || '',
+                        ranchCity: ranches.find(r => r.id === report.ranchId)?.city || '',
                         numberOfAnimals: `${report.numberOfAnimals}`,
                         sex: report.sex,
                         batch: report.batch,
@@ -196,7 +196,14 @@ function ReportForm() {
             getRanches(parseInt(watchClient)).then(r => {
                 setRanches(r)
                 if (r.length) {
-                    setValue('ranchId', `${r[0].id}`)
+                    if (id) {
+                        const ranch = r.find(r => r.id === parseInt(getValues('ranchId'))) || r[0]
+                        setValue('ranchId', `${ranch.id}`)
+                        setValue('ranchCity', `${ranch.city}`)
+                    } else {
+                        setValue('ranchId', `${r[0].id}`)
+                        setValue('ranchCity', `${r[0].city}`)
+                    }
                 }
             })
         }

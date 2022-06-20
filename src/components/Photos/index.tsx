@@ -13,7 +13,6 @@ function Photos({ photos, setPhotos }: PhotosProps) {
         
         const compress = new Compress()
         if (e?.target?.files) {
-            console.log(e.target.files)
             compress.compress([...e.target.files], {
                 quality: 0.7,
                 maxWidth: 1200,

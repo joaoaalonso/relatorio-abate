@@ -9,6 +9,7 @@ import ScreenTemplate from '../components/ScreenTemplate'
 
 import formatNumber from '../services/generateReport/formatNumber'
 import { getSettings, updateSettings } from '../services/settings'
+import { deleteOldReports } from '../services/report'
 
 function Settings() {
     const [deletedIds, setDeletedIds] = useState<number[]>([])
@@ -103,6 +104,28 @@ function Settings() {
         }
     }
 
+    function removeOldReports() {
+        const months = 3
+        swal({
+            title: 'Deseja realmente continuar?', 
+            text: `Todos os relatórios criados a mais de ${months} meses serão deletados`,
+            icon: 'warning',
+            buttons: {
+                cancel: {
+                    visible: true,
+                    text: 'Não'
+                },
+                confirm: {
+                    text: 'Sim',
+                },
+            },
+            dangerMode: true,
+        })
+        .then(confirm => {
+            confirm && deleteOldReports(months)
+        })
+    }
+
     return (
         <ScreenTemplate title='Configurações'>
             <>
@@ -155,6 +178,10 @@ function Settings() {
                 </div>
 
                 <Button variant='secondary' text='Salvar' onClick={handleSubmit} />
+                <br /><br /><br /><br />
+                <div className='row'>
+                    <Button variant='primary' text='Excluir relatórios antigos' onClick={removeOldReports} />
+                </div>
             </>
         </ScreenTemplate>
     )

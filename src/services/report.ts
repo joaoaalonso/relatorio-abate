@@ -6,7 +6,7 @@ import {
     readBinaryFile,
     writeBinaryFile
 } from '@tauri-apps/api/fs'
-import ReportList from '../screens/reports/List'
+import formatDate from 'date-fns/format'
 
 import { getInstance, DB } from './db'
 
@@ -320,4 +320,16 @@ export const getPhotos = async (reportId: number) => {
     }
 
     return photos
+}
+
+export const deleteOldReports = async (months: number) => {
+    const date = new Date()
+    date.setMonth(date.getMonth() - months)
+    date.setHours(0, 0, 0, 0)
+    const formattedDate = formatDate(date, 'yyyy-MM-dd HH:mm:ss')
+    const instance = await getInstance()
+    const reportIds = await instance.select<any[]>(`SELECT id FROM reports WHERE createdAt < "${formattedDate}"`)
+    for(let i = 0; i < reportIds.length; i++) {
+        await deleteReport(reportIds[i].id)
+    }
 }
