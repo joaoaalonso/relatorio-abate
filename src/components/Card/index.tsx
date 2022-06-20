@@ -8,7 +8,7 @@ interface CardProps {
 
 function Card({ text }: CardProps) {
     return (
-        <div className='client-card'>
+        <div className='generic-card'>
             <span>{text}</span>
             <BiChevronRight />
         </div>

@@ -2,15 +2,15 @@ import { useState, useEffect } from 'react'
 import { BiPlus } from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 
-import Card from '../../components/Card'
 import TextField from '../../components/TextField'
 import ScreenTemplate from '../../components/ScreenTemplate'
+import ReportCard from '../../components/ReportCard'
 
-import { getReports, Report } from '../../services/report'
+import { getReports, ReportItem } from '../../services/report'
 
 function ReportList() {
     const [searchTerm, setSearchTerm] = useState('')
-    const [reports, setReports] = useState<Report[]>([])
+    const [reports, setReports] = useState<ReportItem[]>([])
 
     useEffect(() => {
         getReports().then(setReports)
@@ -19,14 +19,19 @@ function ReportList() {
 
     function getFilteredReports() {
         if (!searchTerm) return reports
+        const term = searchTerm.toLowerCase()
+
         return reports.filter(report => {
-            return report.id?.toString() == searchTerm
+            return report.client.toLowerCase().includes(term) ||
+                report.slaughterhouse.toLowerCase().includes(term) ||
+                report.ranch.toLowerCase().includes(term)
         })
     }
 
     return (
         <ScreenTemplate
             title='Relatórios'
+            noBackground
             rightComponent={(
                 <Link to='/reports/add'>
                     <BiPlus size={25} className='svg-button' />
@@ -38,7 +43,7 @@ function ReportList() {
                 
                 {getFilteredReports().map(report => (
                     <Link key={report.id} to={`/reports/${report.id}`}>
-                        <Card text={`${report.sex} - ${report.date}`} />
+                        <ReportCard report={report} />
                     </Link>
                 ))}
                 

@@ -1,7 +1,7 @@
 import { Routes as ReactRoutes, Route, Navigate } from 'react-router-dom'
 
-import ReportList from './screens/invoices/List'
-import ReportForm from './screens/invoices/Form'
+import ReportList from './screens/reports/List'
+import ReportForm from './screens/reports/Form'
 
 import ClientList from './screens/clients/List'
 import ClientDetails from './screens/clients/Details'

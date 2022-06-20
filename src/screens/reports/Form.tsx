@@ -43,6 +43,7 @@ import {
     updateReport,
     deleteReport
 } from '../../services/report'
+import { getAvailableSex, getSexLabel } from '../../services/sex'
 
 
 function ReportForm() {
@@ -316,10 +317,11 @@ function ReportForm() {
     }
 
     function downloadReport() {
-        const [ranchId, date] = getValues(['ranchId', 'date'])
+        const [ranchId, selectSex, date] = getValues(['ranchId', 'sex', 'date'])
         const ranch = ranches.find(ranch => ranch.id == parseInt(ranchId))
         const formattedDate = formatDate(new Date(date), 'dd-MM-yyyy', { locale: ptBr })
-        const defaultPath = `${ranch?.name} ${formattedDate}.pdf`
+        const sex = getSexLabel(selectSex)
+        const defaultPath = `${ranch?.name} ${formattedDate} ${sex}.pdf`
         save({
             title: 'Onde deseja salvar o relatório?',
             defaultPath: defaultPath,
@@ -438,12 +440,7 @@ function ReportForm() {
                     <div className='row'>
                         <div className='column'>
                             <TextField label='Nº de animais' name='numberOfAnimals' type='integer' register={register} errors={errors} required />
-                            <Select label='Sexo' name='sex' control={control} errors={errors} options={[
-                                {value: 'F', label: 'Fêmea'},
-                                {value: 'MI', label: 'Macho inteiro'},
-                                {value: 'MC', label: 'Macho castrado'},
-                                {value: 'MI/MC', label: 'Macho inteiro/castrado'}
-                            ]} required />
+                            <Select label='Sexo' name='sex' control={control} errors={errors} options={getAvailableSex()} required />
                         </div>
                         <div className='column'>
                             <TextField label='Lote' name='batch' register={register} errors={errors} required />

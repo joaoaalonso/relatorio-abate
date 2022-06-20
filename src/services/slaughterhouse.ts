@@ -1,4 +1,5 @@
 import { getInstance } from './db'
+import { deleteReport, Report } from './report'
 
 export interface Slaughterhouse {
     id: number
@@ -44,10 +45,12 @@ export const editSlaughterhouse = async (slaughterhouse: Slaughterhouse): Promis
 }
 
 export const deleteSlaughterhouse = async (slaughterhouseId: number): Promise<boolean> => {
-    return getInstance()
-        .then(instance => {
-            return instance.execute('DELETE FROM slaughterhouses WHERE id = $1', [slaughterhouseId])
-        })
+    const instance = await getInstance()
+    const reports = await instance.select<Report[]>('SELECT * FROM reports WHERE slaughterhouseId = ', [slaughterhouseId])
+    for(let i = 0; i < reports.length; i++) {
+            await deleteReport(reports[i].id || 0)
+    }
+    return instance.execute('DELETE FROM slaughterhouses WHERE id = $1', [slaughterhouseId])
         .then(result => result.rowsAffected > 0)
 }
 
@@ -107,9 +110,11 @@ export const editSlaughterhouseUnit = async (slaughterhouseUnit: SlaughterhouseU
 }
 
 export const deleteSlaughterhouseUnit = async (slaughterhouseUnitId: number): Promise<boolean> => {
-    return getInstance()
-        .then(instance => {
-            return instance.execute('DELETE FROM slaughterhouseUnits WHERE id = $1', [slaughterhouseUnitId])
-        })
+    const instance = await getInstance()
+    const reports = await instance.select<Report[]>('SELECT * FROM reports WHERE slaughterhouseUnitId = ', [slaughterhouseUnitId])
+    for(let i = 0; i < reports.length; i++) {
+            await deleteReport(reports[i].id || 0)
+    }
+    return instance.execute('DELETE FROM slaughterhouseUnits WHERE id = $1', [slaughterhouseUnitId])
         .then(result => result.rowsAffected > 0)
 }

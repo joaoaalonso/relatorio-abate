@@ -1,4 +1,5 @@
 import { getInstance } from './db'
+import { deleteReport, Report } from './report'
 
 export interface Client {
     id: number
@@ -79,9 +80,11 @@ export const editClient = async (client: Client): Promise<number> => {
 }
 
 export const deleteClient = async (clientId: number): Promise<boolean> => {
-    return getInstance()
-        .then(instance => {
-            return instance.execute('DELETE FROM clients WHERE id = $1', [clientId])
-        })
+    const instance = await getInstance()
+    const reports = await instance.select<Report[]>('SELECT * FROM reports WHERE discountId = $1', [clientId])
+    for(let i = 0; i < reports.length; i++) {
+            await deleteReport(reports[i].id || 0)
+    }
+    return instance.execute('DELETE FROM clients WHERE id = $1', [clientId])
         .then(result => result.rowsAffected > 0)
 }

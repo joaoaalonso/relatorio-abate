@@ -4,13 +4,15 @@ import swal from 'sweetalert'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
 import { BiEdit, BiPlus, BiTrash } from 'react-icons/bi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import Table from '../../components/Table'
 import RanchForm from '../../components/Form/Ranch'
+import ReportCard from '../../components/ReportCard'
 import ClientForm from '../../components/Form/Client'
 import ScreenTemplate from '../../components/ScreenTemplate'
 
+import { getReportsBy, ReportItem } from '../../services/report'
 import { deleteRanch, getRanches, Ranch } from '../../services/ranches'
 import { getClientById, deleteClient, Client } from '../../services/clients'
 
@@ -20,6 +22,7 @@ function ClientDetails() {
     
     const [client, setClient] = useState<Client>()
     const [ranches, setRanches] = useState<Ranch[]>([])
+    const [reports, setReports] = useState<ReportItem[]>([])
 
     const [selectedRanch, setSelectedRanch] = useState<Ranch>()
 
@@ -28,6 +31,9 @@ function ClientDetails() {
 
     useEffect(() => {
         fetch()
+        if (id) {
+            getReportsBy('clientId', parseInt(id)).then(setReports)
+        }
     }, [id])
 
     function fetch() {
@@ -40,7 +46,8 @@ function ClientDetails() {
     function removeClient() {
         if (!id) return
         swal({
-            text: 'Deseja realmente remover o cliente?',
+            title: 'Deseja realmente remover o cliente?',
+            text: 'Todos os relatórios desse cliente também serão removidos.',
             icon: 'warning',
             buttons: {
                 cancel: {
@@ -90,7 +97,8 @@ function ClientDetails() {
 
     function removeRanch(ranch: Ranch) {
         swal({
-            text: 'Deseja realmente remover essa propriedade?',
+            title: 'Deseja realmente remover essa propriedade?', 
+            text: 'Os relatórios relacionados a essa propriedade também serão removidos.',
             icon: 'warning',
             buttons: {
                 cancel: {
@@ -166,6 +174,14 @@ function ClientDetails() {
                         </tbody>
                     </>
                 </Table>
+
+                <p>Relatórios</p>
+                {reports.map(report => (
+                    <Link key={report.id} to={`/reports/${report.id}`}>
+                        <ReportCard report={report} />
+                    </Link>
+                ))}
+                {!reports.length && <p>Nenhum relatório cadastrado</p>}
                 
                 <Modal open={modalIsOpen} onClose={resetModal}>
                     <div style={{ width: 400, padding: 24, paddingTop: 36 }}>

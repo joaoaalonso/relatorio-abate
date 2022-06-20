@@ -74,9 +74,33 @@ function Settings() {
                 weight: (parseFloat(fetus.weight.replace(',', '.')) || 0)
             }))
         }
-        updateSettings(data, deletedIds)
-            .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
-            .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
+
+        if (deletedIds.length) {
+            swal({
+                title: 'Deseja realmente continuar?', 
+                text: 'Todos os relatórios que utilizaram os descontos removidos serão deletados.',
+                icon: 'warning',
+                buttons: {
+                    cancel: {
+                        visible: true,
+                        text: 'Não'
+                    },
+                    confirm: {
+                        text: 'Sim',
+                    },
+                },
+                dangerMode: true,
+            })
+            .then(confirm => {
+                confirm && updateSettings(data, deletedIds)
+                    .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
+                    .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
+            })
+        } else {
+            updateSettings(data, deletedIds)
+                .then(() => { swal('', 'Configurações atualizadas com sucesso!', 'success') })
+                .catch(() => { swal('', 'Erro ao atualizar configurações!', 'error') })
+        }
     }
 
     return (

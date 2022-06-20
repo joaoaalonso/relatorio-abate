@@ -1,4 +1,5 @@
 import { getInstance } from './db'
+import { deleteReport, Report } from './report'
 
 export interface Discount {
     id: number
@@ -66,10 +67,12 @@ async function createDiscount(discount: Omit<Discount, 'id'>) {
 }
 
 async function deleteDiscounts(ids: number[]) {
-    return getInstance()
-        .then(instance => instance.execute(
-                `DELETE FROM discounts WHERE id IN (${ids.join(',')})`
-            ))
+    const instance = await getInstance()
+    const reports = await instance.select<Report[]>(`SELECT * FROM reports WHERE discountId IN (${ids.join(',')})`)
+    for(let i = 0; i < reports.length; i++) {
+            await deleteReport(reports[i].id || 0)
+    }
+    await instance.execute(`DELETE FROM discounts WHERE id IN (${ids.join(',')})`)
 }
 
 async function updateFetus(fetus: Fetus) {

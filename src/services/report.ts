@@ -6,6 +6,7 @@ import {
     readBinaryFile,
     writeBinaryFile
 } from '@tauri-apps/api/fs'
+import ReportList from '../screens/reports/List'
 
 import { getInstance, DB } from './db'
 
@@ -52,10 +53,33 @@ export interface Report {
     bruises?: ObjectSeqTypeValue[]
 }
 
-export const getReports = async (): Promise<Report[]> => {
+export interface ReportItem {
+    id?: number
+    date: string
+    slaughterhouse: string
+    client: string
+    ranch: string
+    numberOfAnimals: number
+    sex: 'F' | 'MI' | 'MC' | 'MI/MC'
+}
+
+export const getReports = async (): Promise<ReportItem[]> => {
     return getInstance()
         .then(instance => {
-            return instance.select('SELECT * FROM reports')
+            return instance.select(`
+                SELECT
+                    reports.id,
+                    reports.date,
+                    slaughterhouses.name AS slaughterhouse,
+                    clients.name AS client,
+                    ranches.name AS ranch,
+                    reports.numberOfAnimals,
+                    reports.sex
+                FROM reports
+                INNER JOIN clients ON reports.clientId = clients.id
+                INNER JOIN ranches ON reports.ranchId = ranches.id
+                INNER JOIN slaughterhouses ON reports.slaughterhouseId = slaughterhouses.id
+            `)
         })
 }
 
@@ -66,6 +90,28 @@ export const getReportById = async (id: number): Promise<Report> => {
             .then(res => res[0])
         })
 }
+
+export const getReportsBy = async (field: string, id: number): Promise<ReportItem[]> => {
+    return getInstance()
+        .then(instance => {
+            return instance.select(`
+                SELECT
+                    reports.id,
+                    reports.date,
+                    slaughterhouses.name AS slaughterhouse,
+                    clients.name AS client,
+                    ranches.name AS ranch,
+                    reports.numberOfAnimals,
+                    reports.sex
+                FROM reports
+                INNER JOIN clients ON reports.clientId = clients.id
+                INNER JOIN ranches ON reports.ranchId = ranches.id
+                INNER JOIN slaughterhouses ON reports.slaughterhouseId = slaughterhouses.id
+                WHERE reports.${field} = $1
+            `, [id])
+        })
+}
+
 
 export const createReport = async (data: Report): Promise<number> => {
     const instance = await getInstance()

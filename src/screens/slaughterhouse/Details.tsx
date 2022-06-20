@@ -4,11 +4,12 @@ import swal from 'sweetalert'
 import { useState, useEffect } from 'react'
 import { Modal } from 'react-responsive-modal'
 import { BiEdit, BiPlus, BiTrash } from 'react-icons/bi'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 import Table from '../../components/Table'
+import ReportCard from '../../components/ReportCard'
 import ScreenTemplate from '../../components/ScreenTemplate'
-import SlaughterhouseForm from '../../components/Form/Slaughterhouse';
+import SlaughterhouseForm from '../../components/Form/Slaughterhouse'
 import SlaughterhouseUnitForm from '../../components/Form/SlaughterhouseUnit'
 
 import { 
@@ -19,6 +20,7 @@ import {
     Slaughterhouse, 
     SlaughterhouseUnit
 } from '../../services/slaughterhouse'
+import { getReportsBy, ReportItem } from '../../services/report'
 
 function SlaughterhouseDetails() {
     const [modalIsOpen, setModalIsOpen] = useState(false)
@@ -26,6 +28,7 @@ function SlaughterhouseDetails() {
     
     const [units, setUnits] = useState<SlaughterhouseUnit[]>([])
     const [slaughterhouse, setSlaughterhouse] = useState<Slaughterhouse>()
+    const [reports, setReports] = useState<ReportItem[]>([])
 
     const [selectedUnit, setSelectedUnit] = useState<SlaughterhouseUnit>()
     
@@ -34,6 +37,9 @@ function SlaughterhouseDetails() {
 
     useEffect(() => {
         fetch()
+        if(id) {
+            getReportsBy('slaughterhouseId', parseInt(id)).then(setReports)
+        }
     }, [id])
 
     function fetch() {
@@ -46,7 +52,8 @@ function SlaughterhouseDetails() {
     function removeSlaughterhouse() {
         if (!id) return
         swal({
-            text: 'Deseja realmente remover esse abatedouro?',
+            title: 'Deseja realmente remover esse abatedouro?',
+            text: 'Todos os relatórios relacionados a esse abatedouro também serão removidos.',
             icon: 'warning',
             buttons: {
                 cancel: {
@@ -96,7 +103,8 @@ function SlaughterhouseDetails() {
 
     function deleteUnit(unit: SlaughterhouseUnit) {
         swal({
-            text: 'Deseja realmente remover essa unidade abatedoura?',
+            title: 'Deseja realmente remover essa unidade abatedoura?',
+            text: 'Todos os relatórios relacionados a essa unidade também serão removidos.',
             icon: 'warning',
             buttons: {
                 cancel: {
@@ -152,6 +160,14 @@ function SlaughterhouseDetails() {
                     </>
                 </Table>
                 
+                <p>Relatórios</p>
+                {reports.map(report => (
+                    <Link key={report.id} to={`/reports/${report.id}`}>
+                        <ReportCard report={report} />
+                    </Link>
+                ))}
+                {!reports.length && <p>Nenhum relatório cadastrado</p>}
+
                 <Modal open={modalIsOpen} onClose={resetModal}>
                     <div style={{ width: 400, padding: 24, paddingTop: 36 }}>
                         <SlaughterhouseForm
