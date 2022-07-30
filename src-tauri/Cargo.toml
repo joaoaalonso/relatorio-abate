@@ -1,11 +1,11 @@
 [package]
-name = "app"
-version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
+name = "relatorio-abate"
+version = "1.0.0"
+description = "Relatório de abate"
+authors = ["João Alonso"]
 license = ""
 repository = ""
-default-run = "app"
+default-run = "relatorio-abate"
 edition = "2021"
 rust-version = "1.57"
 
