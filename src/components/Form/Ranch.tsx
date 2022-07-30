@@ -90,7 +90,10 @@ function RanchForm({ clientId, ranch, onSave }: RanchFormProps) {
 
             <div className='row'>
                 <div className='column'>
-                    <TextField name='description' label='Descrição' register={register} errors={errors} />
+                    <TextField name='ie' label='Inscrição' register={register} errors={errors} />
+                </div>
+                <div className='column'>
+                    <TextField name='comments' label='Observações' register={register} errors={errors} />
                 </div>
             </div>
 

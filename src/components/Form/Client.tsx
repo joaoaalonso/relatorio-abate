@@ -105,6 +105,21 @@ function ClientForm({ client, onSave }: ClientFormProps) {
             </div>
 
             <div className='row'>
+                <div className='column'>
+                    <TextField name='document' label='CPF/CNPJ' register={register} errors={errors} />
+                </div>
+                <div className='column'>
+                    <TextField name='phone' label='Telefone' register={register} errors={errors} />
+                </div>
+            </div>
+
+            <div className='row'>
+                <div className='column'>
+                    <TextField name='email' label='Email' register={register} errors={errors} />
+                </div>
+            </div>
+
+            <div className='row'>
                 <Button type='submit' variant='secondary' text={client ? 'Salvar alterações' : 'Cadastrar cliente'} />
             </div>
         </form>

@@ -16,10 +16,10 @@ import TextField from '../../components/TextField'
 import DatePicker from '../../components/DatePicker'
 import ScreenTemplate from '../../components/ScreenTemplate'
 
+import { getSettings } from '../../services/settings'
 import generateReport from '../../services/generateReport'
 import { getRanches, Ranch } from '../../services/ranches'
 import { Client, getClients } from '../../services/clients'
-import { Discount, getSettings } from '../../services/settings'
 import { 
     Slaughterhouse,
     getSlaughterhouses,
@@ -30,7 +30,6 @@ import {
     Report,
     getDif, 
     getFetus, 
-    getAwards, 
     getBruises, 
     getMaturity, 
     createReport, 
@@ -52,7 +51,6 @@ function ReportForm() {
 
     const [clients, setClients] = useState<Client[]>([])
     const [ranches, setRanches] = useState<Ranch[]>([])
-    const [discounts, setDiscounts] = useState<Discount[]>([])
     const [slaughterhouses, setSlaughterhouses] = useState<Slaughterhouse[]>([])
     const [slaughterhouseUnits, setSlaughterhouseUnits] = useState<SlaughterhouseUnit[]>([])
 
@@ -77,7 +75,6 @@ function ReportForm() {
         { type: '4', value: '0' },
         { type: '5', value: '0' },
     ])
-    const [awards, setAwards] = useState<ObjectTypeValue[]>([{ type: '', value: '' }])
     const [fetus, setFetus] = useState<ObjectTypeValue[]>([
         { type: 'P', value: '0' },
         { type: 'M', value: '0' },
@@ -109,7 +106,6 @@ function ReportForm() {
             clientId: '',
             ranchId: '',
             ranchCity: '',
-            discountId: '',
             numberOfAnimals: '',
             sex: 'F',
             batch: '',
@@ -144,7 +140,6 @@ function ReportForm() {
                         cattleShed: report.cattleShed,
                         sequential: report.sequential,
                         arroba: report.arroba ? (report.arroba / 100).toString().replace('.', ',') : '',
-                        discountId: `${report.discountId}`,
                         vaccineWeight: (report.vaccineWeight / 100).toString().replace('.', ','),
                         PV: (report.PV / 100).toString().replace('.', ','),
                         PC: (report.PC / 100).toString().replace('.', ','),
@@ -158,7 +153,6 @@ function ReportForm() {
             getFetus(reportId).then(setFetus)
             getDif(reportId).then(setDif)
             getBruises(reportId).then(setBruises)
-            getAwards(reportId).then(setAwards)
             getPhotos(reportId).then(setPhotos)
         }
     }, [id])
@@ -176,10 +170,6 @@ function ReportForm() {
                 setValue('slaughterhouseId', `${s[0].id}`)
             }
         })
-        getSettings()
-            .then(settings => {
-                setDiscounts(settings.discounts)
-            })
     }, [])
 
     const watchSex = watch('sex')
@@ -227,7 +217,7 @@ function ReportForm() {
     }, [watchSlaughterhouse])
 
     function parseNumber(number: string) {
-        return parseFloat(number.replace(',', '.')) * 100
+        return Math.floor(parseFloat(number.replace(',', '.')) * 100)
     }
 
     function onSubmit(data: any) {
@@ -244,20 +234,19 @@ function ReportForm() {
             cattleShed: data.cattleShed,
             sequential: data.sequential,
             arroba: data.arroba ? parseNumber(data.arroba) : undefined,
-            discountId: parseInt(data.discountId),
             vaccineWeight: parseNumber(data.vaccineWeight),
             PV: parseNumber(data.PV),
             PC: parseNumber(data.PC),
             corralEvaluation: data.corralEvaluation,
             comments: data.comments,
+            penalties: data.penalties,
             photos,
             maturity,
             finishing,
             rumenScore,
             fetus,
             dif,
-            bruises,
-            awards
+            bruises
         }
         
         swal({
@@ -465,18 +454,6 @@ function ReportForm() {
                             <TextField label='Valor da arroba' name='arroba' type='decimal' register={register} errors={errors} />
                         </div>
                         <div className='column'>
-                            <Select 
-                                label='Desconto' 
-                                name='discountId' 
-                                control={control} 
-                                errors={errors} 
-                                options={discounts.map(discount => {
-                                    return { value: `${discount.id}`, label: discount.name }
-                                })} 
-                                required 
-                            />
-                        </div>
-                        <div className='column'>
                             <TextField label='Peso da vacina' name='vaccineWeight' type='decimal' register={register} errors={errors} required />
                         </div>
                         <div className='column'>
@@ -491,6 +468,7 @@ function ReportForm() {
                         <div className='column'>
                             <TextField label='Avaliação do curral' name='corralEvaluation' type='textarea' register={register} errors={errors} required />
                             <TextField label='Observações' name='comments' type='textarea' register={register} errors={errors} />
+                            <TextField label='Penalizações' name='penalties' type='textarea' register={register} errors={errors} />
                         </div>
                     </div>
 
@@ -624,31 +602,6 @@ function ReportForm() {
                                                 <td><TextField onChange={(value) => updateTableRow(bruises, setBruises, index, 'type', value)} value={elem.type} /></td>
                                                 <td><TextField onChange={(value) => updateTableRow(bruises, setBruises, index, 'value', value)} value={elem.value} /></td>
                                                 <td><BiTrash onClick={() => removeTableRow(bruises, setBruises, index, true)} /></td>
-                                            </tr>
-                                        )
-                                    })}
-                                </tbody>
-                            </>
-                        </Table>
-                    </div>
-
-                    <div className='row'>
-                        <Table title='Premiações'>
-                            <>
-                                <thead>
-                                    <tr>
-                                        <th>Nome</th>
-                                        <th>Valor</th>
-                                        <th><BiPlus size={15} onClick={() => addTableRow(awards, setAwards)} /></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {awards.map((elem, index) => {
-                                        return (
-                                            <tr key={`awards-${index}`}>
-                                                <td><TextField onChange={(value) => updateTableRow(awards, setAwards, index, 'type', value)} value={elem.type} /></td>
-                                                <td><TextField type='decimal' onChange={(value) => updateTableRow(awards, setAwards, index, 'value', value)} value={elem.value} /></td>
-                                                <td><BiTrash onClick={() => removeTableRow(awards, setAwards, index)} /></td>
                                             </tr>
                                         )
                                     })}

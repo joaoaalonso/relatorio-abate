@@ -37,18 +37,17 @@ export interface Report {
     cattleShed: string
     sequential: string
     arroba?: number
-    discountId : number
     vaccineWeight: number
     PV: number
     PC: number
     corralEvaluation: string
     comments?: string
+    penalties?: string
     photos?: string[]
     maturity?: ObjectTypeValue[]
     finishing?: ObjectTypeValue[]
     rumenScore?: ObjectTypeValue[]
     fetus?: ObjectTypeValue[]
-    awards?: ObjectTypeValue[]
     dif?: ObjectSeqTypeValue[]
     bruises?: ObjectSeqTypeValue[]
 }
@@ -118,7 +117,7 @@ export const createReport = async (data: Report): Promise<number> => {
 
     const result = await instance.execute(`
         INSERT INTO reports
-        (clientId, ranchId, slaughterhouseId, slaughterhouseUnitId, PC, PV, arroba, batch, breed, cattleShed, comments, corralEvaluation, discountId, numberOfAnimals, sequential, sex, vaccineWeight, date)
+        (clientId, ranchId, slaughterhouseId, slaughterhouseUnitId, PC, PV, arroba, batch, breed, cattleShed, comments, penalties, corralEvaluation, numberOfAnimals, sequential, sex, vaccineWeight, date)
         VALUES
         ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
     `, [
@@ -133,8 +132,8 @@ export const createReport = async (data: Report): Promise<number> => {
         data.breed,
         data.cattleShed,
         data.comments,
+        data.penalties,
         data.corralEvaluation,
-        data.discountId,
         data.numberOfAnimals,
         data.sequential,
         data.sex,
@@ -150,7 +149,6 @@ export const createReport = async (data: Report): Promise<number> => {
     await saveObjectTypeValue(instance, 'reportMaturity', reportId, data.maturity)
     await saveObjectTypeValue(instance, 'reportFinishing', reportId, data.finishing)
     await saveObjectTypeValue(instance, 'reportRumenScore', reportId, data.rumenScore)
-    await saveObjectTypeValue(instance, 'reportAwards', reportId, data.awards)
     await saveObjectTypeValue(instance, 'reportFetus', reportId, data.fetus)
     
     await saveObjectSeqTypeValue(instance, 'reportDif', reportId, data.dif)
@@ -176,8 +174,8 @@ export const updateReport = async (reportId: number, data: Report): Promise<numb
         breed = $9,
         cattleShed = $10,
         comments = $11,
-        corralEvaluation = $12,
-        discountId = $13,
+        penalties = $12,
+        corralEvaluation = $13,
         numberOfAnimals = $14,
         sequential = $15,
         sex = $16,
@@ -196,8 +194,8 @@ export const updateReport = async (reportId: number, data: Report): Promise<numb
         data.breed,
         data.cattleShed,
         data.comments,
+        data.penalties,
         data.corralEvaluation,
-        data.discountId,
         data.numberOfAnimals,
         data.sequential,
         data.sex,
@@ -213,7 +211,6 @@ export const updateReport = async (reportId: number, data: Report): Promise<numb
     await saveObjectTypeValue(instance, 'reportMaturity', reportId, data.maturity)
     await saveObjectTypeValue(instance, 'reportFinishing', reportId, data.finishing)
     await saveObjectTypeValue(instance, 'reportRumenScore', reportId, data.rumenScore)
-    await saveObjectTypeValue(instance, 'reportAwards', reportId, data.awards)
     await saveObjectTypeValue(instance, 'reportFetus', reportId, data.fetus)
     
     await saveObjectSeqTypeValue(instance, 'reportDif', reportId, data.dif)
@@ -239,7 +236,6 @@ const removeReportData = async (instance: DB, reportId: number): Promise<void> =
     await instance.execute('DELETE FROM reportMaturity WHERE reportId = $1', [reportId])
     await instance.execute('DELETE FROM reportFinishing WHERE reportId = $1', [reportId])
     await instance.execute('DELETE FROM reportRumenScore WHERE reportId = $1', [reportId])
-    await instance.execute('DELETE FROM reportAwards WHERE reportId = $1', [reportId])
     await instance.execute('DELETE FROM reportFetus WHERE reportId = $1', [reportId])
     await instance.execute('DELETE FROM reportDif WHERE reportId = $1', [reportId])
     await instance.execute('DELETE FROM reportBruises WHERE reportId = $1', [reportId])
@@ -287,7 +283,6 @@ const saveImages = async (instance: DB, reportId: number, images?: string[]): Pr
 }
 
 export const getFetus = (reportId: number) => getValues<ObjectTypeValue>('reportFetus', reportId)
-export const getAwards = (reportId: number) => getValues<ObjectTypeValue>('reportAwards', reportId)
 export const getMaturity = (reportId: number) => getValues<ObjectTypeValue>('reportMaturity', reportId)
 export const getFinishing = (reportId: number) => getValues<ObjectTypeValue>('reportFinishing', reportId)
 export const getRumenScore = (reportId: number) => getValues<ObjectTypeValue>('reportRumenScore', reportId)

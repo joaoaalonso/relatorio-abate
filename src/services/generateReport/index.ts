@@ -3,6 +3,7 @@ import { writeBinaryFile } from '@tauri-apps/api/fs'
 
 import vfs from './vfs'
 import renderInfo from './renderInfo'
+import renderFetus from './renderFetus'
 import renderHeader from './renderHeader'
 import renderPhotos from './renderPhotos'
 import renderWeights from './renderWeights'
@@ -13,20 +14,19 @@ import {
     getDif, 
     getFetus, 
     getPhotos, 
-    getAwards, 
     getBruises, 
     getMaturity, 
     getFinishing, 
     getReportById, 
     getRumenScore
 } from '../report'
+import renderPenalties from './renderPenalties'
 
 export default async function(reportId: number, path: string): Promise<boolean> {
     const report = await getReportById(reportId)
     
     report.dif = await getDif(reportId)
     report.fetus = await getFetus(reportId)
-    report.awards = await getAwards(reportId)
     report.photos = await getPhotos(reportId)
     report.bruises = await getBruises(reportId)
     report.maturity = await getMaturity(reportId)
@@ -38,6 +38,8 @@ export default async function(reportId: number, path: string): Promise<boolean> 
         renderInfo,
         renderCorralEvaluation,
         renderWeights,
+        renderPenalties,
+        renderFetus,
         renderComments,
         renderSignature,
         renderPhotos    

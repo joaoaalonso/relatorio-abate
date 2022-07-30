@@ -144,6 +144,9 @@ function ClientDetails() {
             <>
                 <p>Nome: {client?.name || '-'}</p>
                 <p>Endereço: {renderAddress()}</p>
+                <p>CPF/CNPJ: {client?.document || '-'}</p>
+                <p>Email: {client?.email || '-'}</p>
+                <p>Telefone: {client?.phone || '-'}</p>
                 <Table 
                     title='Propriedades'
                     righComponent={<BiPlus size={25} className='svg-button' onClick={() => setRanchModalIsOpen(true)} />}
@@ -155,7 +158,8 @@ function ClientDetails() {
                                 <th>Endereço</th>
                                 <th>Cidade</th>
                                 <th>Estado</th>
-                                <th>Descrição</th>
+                                <th>Inscrição</th>
+                                <th>Observações</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -165,12 +169,13 @@ function ClientDetails() {
                                     <td>{ranch.address}</td>
                                     <td>{ranch.city}</td>
                                     <td>{ranch.state}</td>
-                                    <td>{ranch.description}</td>
+                                    <td>{ranch.ie}</td>
+                                    <td>{ranch.comments}</td>
                                     <td><BiEdit size={15} onClick={() => editRanch(ranch)} /></td>
                                     <td><BiTrash size={15} onClick={() => removeRanch(ranch)} /></td>
                                 </tr>
                             ))}
-                            {!ranches.length && <tr><td colSpan={5}>Nenhuma propriedade cadastrada</td></tr>}
+                            {!ranches.length && <tr><td colSpan={6}>Nenhuma propriedade cadastrada</td></tr>}
                         </tbody>
                     </>
                 </Table>

@@ -1,6 +1,9 @@
 CREATE TABLE clients (
     `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     `name` TEXT NOT NULL,
+    `document` TEXT,
+    `email` TEXT,
+    `phone` TEXT,
     `postalCode` TEXT NOT NULL,
     `streetName` TEXT,
     `streetNumber` TEXT,
@@ -18,7 +21,8 @@ CREATE TABLE ranches (
     `city` TEXT NOT NULL,
     `state` TEXT NOT NULL,
     `address` TEXT,
-    `description` TEXT,
+    `ie` TEXT,
+    `comments` TEXT,
     CONSTRAINT `ranches_clientId_fk` 
         FOREIGN KEY (`clientId`) 
         REFERENCES `clients` (`id`)
@@ -41,18 +45,10 @@ CREATE TABLE slaughterhouseUnits (
         ON DELETE CASCADE
 );
 
-
-CREATE TABLE discounts (
-    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    `name` TEXT NOT NULL,
-    `value` INTEGER NOT NULL
-);
-
 CREATE TABLE fetus (
     `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     `size` TEXT NOT NULL,
-    `weight` INTEGER NOT NULL,
-    `age` TEXT NOT NULL
+    `weight` INTEGER NOT NULL
 );
 
 CREATE TABLE reports (
@@ -61,7 +57,6 @@ CREATE TABLE reports (
     `ranchId` INTEGER NOT NULL,
     `slaughterhouseId` INTEGER NOT NULL,
     `slaughterhouseUnitId` INTEGER NOT NULL,
-    `discountId` INTEGER NOT NULL,
     `PC` INTEGER NOT NULL,
     `PV` INTEGER NOT NULL,
     `arroba` INTEGER,
@@ -69,6 +64,7 @@ CREATE TABLE reports (
     `breed` TEXT NOT NULL,
     `cattleShed` TEXT NOT NULL,
     `comments` TEXT,
+    `penalties` TEXT,
     `corralEvaluation` TEXT NOT NULL,
     `numberOfAnimals` INTEGER NOT NULL,
     `sequential` TEXT NOT NULL,
@@ -91,10 +87,6 @@ CREATE TABLE reports (
     CONSTRAINT `reports_slaughterhouseUnitId_fk` 
         FOREIGN KEY (`slaughterhouseUnitId`) 
         REFERENCES `slaughterhouseUnits` (`id`)
-        ON DELETE CASCADE,
-    CONSTRAINT `reports_discountsId_fk` 
-        FOREIGN KEY (`discountId`) 
-        REFERENCES `discounts` (`id`)
         ON DELETE CASCADE
 );
 
@@ -141,17 +133,6 @@ CREATE TABLE reportRumenScore (
         ON DELETE CASCADE
 );
 
-CREATE TABLE reportAwards (
-    `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    `reportId` INTEGER NOT NULL,
-    `type` TEXT NOT NULL,
-    `value` TEXT NOT NULL,
-    CONSTRAINT `reportAwards_reportId_fk` 
-        FOREIGN KEY (`reportId`) 
-        REFERENCES `reports` (`id`)
-        ON DELETE CASCADE
-);
-
 CREATE TABLE reportFetus (
     `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     `reportId` INTEGER NOT NULL,
@@ -187,12 +168,7 @@ CREATE TABLE reportBruises (
         ON DELETE CASCADE
 );
 
-
-INSERT INTO discounts VALUES 
-    (1, "Funrural", 150), 
-    (2, "Senar", 20);
-
 INSERT INTO fetus VALUES 
-    (1, "P", 800, "DE ATÉ 2 MESES"), 
-    (2, "M", 1600, "ENTRE 2 À 5 MESES"), 
-    (3, "G", 3200, "DE ATÉ 9 MESES");
+    (1, "P", 900), 
+    (2, "M", 1800), 
+    (3, "G", 3600);

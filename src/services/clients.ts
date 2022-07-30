@@ -4,6 +4,9 @@ import { deleteReport, Report } from './report'
 export interface Client {
     id: number
     name: string
+    document: string
+    email: string
+    phone: string
     postalCode: string
     streetName: string
     streetNumber: string
@@ -33,10 +36,13 @@ export const createClient = async (client: Omit<Client, 'id'>): Promise<number> 
         .then(instance => {
             return instance.execute(`
                 INSERT INTO clients
-                (name, postalCode, streetName, streetNumber, neighborhood, addressComplement, city, state)
-                values ($1, $2, $3, $4, $5, $6, $7, $8)
+                (name, document, email, phone, postalCode, streetName, streetNumber, neighborhood, addressComplement, city, state)
+                values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
                 `, [
                     client.name,
+                    client.document,
+                    client.email,
+                    client.phone,
                     client.postalCode,
                     client.streetName,
                     client.streetNumber,
@@ -56,16 +62,22 @@ export const editClient = async (client: Client): Promise<number> => {
                 UPDATE clients
                 SET
                     name = $1,
-                    postalCode = $2,
-                    streetName = $3,
-                    streetNumber = $4,
-                    neighborhood = $5,
-                    addressComplement = $6,
-                    city = $7,
-                    state = $8
-                WHERE id = $9
+                    document = $2,
+                    email = $3,
+                    phone = $4,
+                    postalCode = $5,
+                    streetName = $6,
+                    streetNumber = $7,
+                    neighborhood = $8,
+                    addressComplement = $9,
+                    city = $10,
+                    state = $11
+                WHERE id = $12
                 `, [
                     client.name,
+                    client.document,
+                    client.email,
+                    client.phone,
                     client.postalCode,
                     client.streetName,
                     client.streetNumber,

@@ -46,13 +46,5 @@ export default function (report: Report) {
         },
         colSpan: 2,
         layout: 'noBorders'
-        // stack: [
-        //     `PV: ${formatNumber(PV)} KG`,
-        //     '\n',
-        //     `PC: ${formatNumber(PC)} KG`,
-        //     '\n',
-        //     `RC: ${formatNumber(RC, 1)} %`
-        // ],
-        // colSpan: 2
     })
 }

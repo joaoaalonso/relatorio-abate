@@ -9,7 +9,8 @@ export interface Ranch {
     city: string
     state: string
     address: string
-    description: string
+    ie: string
+    comments: string
 }
 
 export const getRanches = async (clientId: number): Promise<Ranch[]> => {
@@ -34,9 +35,9 @@ export const createRanch = async (ranch: Omit<Ranch, 'id'>): Promise<number> => 
         .then(instance => {
             return instance.execute(`
                 INSERT INTO ranches
-                (clientId, name, postalCode, city, state, address, description)
+                (clientId, name, postalCode, city, state, address, ie, comments)
                 values
-                ($1, $2, $3, $4, $5, $6, $7)`, 
+                ($1, $2, $3, $4, $5, $6, $7, $8)`, 
                 [
                     ranch.clientId,
                     ranch.name,
@@ -44,7 +45,8 @@ export const createRanch = async (ranch: Omit<Ranch, 'id'>): Promise<number> => 
                     ranch.city,
                     ranch.state,
                     ranch.address,
-                    ranch.description
+                    ranch.ie,
+                    ranch.comments
                 ])
                 .then(({ lastInsertId }) => lastInsertId)
     })
@@ -62,8 +64,9 @@ export const editRanch = async (ranch: Ranch): Promise<number> => {
                 city = $4,
                 state = $5,
                 address = $6,
-                description = $7
-                WHERE id = $8`,
+                ie = $7,
+                comments = $8
+                WHERE id = $9`,
                 [
                     ranch.clientId,
                     ranch.name,
@@ -71,7 +74,8 @@ export const editRanch = async (ranch: Ranch): Promise<number> => {
                     ranch.city,
                     ranch.state,
                     ranch.address,
-                    ranch.description,
+                    ranch.ie,
+                    ranch.comments,
                     ranch.id
                 ]
                 )
