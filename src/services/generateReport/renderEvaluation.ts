@@ -1,125 +1,77 @@
-import { Report } from '../report'
-import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
+import renderSection from './renderSection'
+import { ObjectTypeValue, Report } from '../report'
 
-function renderTableWithPercentage (label: string, input: any, inputKey: string) {
-    const rows: any[] = []
-    input[inputKey].forEach((obj: any) => {
-        const percentil = (obj.value / input.numberOfAnimals)*100
-        if (percentil > 0) {
-            rows.push([
-                { text: `${obj.type}`, alignment: 'center' }, 
-                { text: `${obj.value} (${formatNumber(percentil, 1)}%)`, alignment: 'center' }, 
-            ])
-        }
-    })
-    return {
-        width: '*',
-        table: {
-            widths: [25, '*'],
-            body: [
-                [ { text: label, alignment: 'center', colSpan: 2 }, {} ],
-                ...rows
-            ]
-        }
-    }
+const formatRow = (data: ObjectTypeValue[], report: Report, sufix: string = '') => {
+    return data.map(d => {
+        if (d.value == '0') return null
+        const percentil = (+d.value / report.numberOfAnimals) * 100
+        return `${d.type}${sufix} - ${percentil}%`
+    }).filter(Boolean)
 }
 
-function renderSeqTable (label: string, input: any, inputKey: string, titles: string[]) {
-    if(!input[inputKey].filter((a: any) => !!a.seq).length) return null
-
-    const rows: any[] = []
-    input[inputKey].forEach((obj: any) => {
-        if (!!obj.seq) {
-            rows.push([
-                { text: obj.seq, alignment: 'center' }, 
-                { text: obj.type.toUpperCase(), alignment: 'center' }, 
-                { text: obj.value.toUpperCase(), alignment: 'center' }, 
-            ])
-        }
-    })
+const renderDif = (report: Report, margin: number[]) => {
+    if (!report.dif?.filter(dif => !!dif.seq).length) return null
     return {
-        width: '*',
         table: {
             widths: ['*', '*', '*'],
             body: [
-                [ { text: label, alignment: 'center', colSpan: 3 }, {}, {} ],
-                [ 
-                    { text: 'SEQ', alignment: 'center' }, 
-                    { text: titles[0], alignment: 'center' },
-                    { text: titles[1], alignment: 'center' }
-                ],
-                ...rows
+                [ 'DIF - SEQUENCIAL', 'MOTIVO', 'DESTINO' ],
+                ...report.dif.map(d => [ d.seq, d.type, d.value ])
             ]
-        }
+        },
+        layout: 'noBorders',
+        margin
     }
 }
 
-async function renderFetoEVacina(report: any) {
-    const valorKg = report.arroba ? (report.arroba / 100)/ARROBA : null
-    const valorVacina = valorKg ? (report.vaccineWeight / 100) * valorKg : null
-
-    const body = [
-        [ { text: 'PESO VACINA', alignment: 'center' } ],
-        [
-            {
-                stack: [
-                    `${formatNumber((report.vaccineWeight / 100), 3)} KG/CBÇ`,
-                    `(R$ ${valorVacina ? formatNumber(valorVacina) : ''})`,
-                ],
-                alignment: 'center'
-            }
-        ]
-    ]
-
-    if (report.sex == 'F' && Object.keys(report.fetus).length > 0) {
-        let totalFetos = 0
-        const arrayFetos: any[] = []
-        if (report.sex == 'F') {
-            report.fetus.forEach((fetos: any) => {
-                if (!!fetos.type && fetos.value > 0) {
-                    totalFetos += parseInt(fetos.value)
-                    arrayFetos.push(`${fetos.value}${fetos.type}`)
-                }
-            })
-        }
-        let totalFetosString = 'NENHUM FETO\n\n'
-        if (totalFetos > 0) {
-            totalFetosString = `${totalFetos} FETOS: ${arrayFetos.join('/')}\n\n`
-        }
-        body.unshift([ { text: totalFetosString, alignment: 'center' } ])
-        body.unshift([ { text: 'FETOS', alignment: 'center' } ])
-    }
-
+const renderBruises = (report: Report) => {
+    if (!report.bruises?.filter(bruise => !!bruise.seq).length) return null
     return {
-        width: '*',
         table: {
-            widths: ['*'],
-            body
-        }
+            widths: ['*', '*', '*'],
+            body: [
+                [ 'HEMATOMAS - SEQUENCIAL', 'LOCAL', 'ORIGEM' ],
+                ...report.bruises.map(d => [ d.seq, d.type, d.value ])
+            ]
+        },
+        layout: 'noBorders'
     }
 }
 
-export default async function(report: Report) {
-    return {
+export default function (report: Report) {
+    const margin = [0, 0, 0, 4]
+
+    const maturity = formatRow(report.maturity || [], report, 'D')
+    const finishing = formatRow(report.finishing || [], report)
+    const rumenScore = formatRow(report.rumenScore || [], report)
+
+    const rows = []
+    for(let i = 0; i < 5; i++) {
+        const row = []
+        if (!maturity[i] && !finishing[i] && !rumenScore[i]) continue
+        row.push(maturity[i] || '')
+        row.push(finishing[i] || '')
+        row.push(rumenScore[i] || '')
+        rows.push(row)
+    }
+
+    return renderSection('Avaliação de abate', {
         stack: [
             {
-                columns: [
-                    renderTableWithPercentage('MATURIDADE', report, 'maturity'),
-                    renderTableWithPercentage('ACABAMENTO', report, 'finishing'),
-                    renderTableWithPercentage('ESCORE RUMINAL', report, 'rumenScore'),
-                    await renderFetoEVacina(report)
-                ],
-                columnGap: 10
+                table: {
+                    widths: ['*', '*', '*'],
+                    body: [
+                        [ 'MATURIDADE', 'ACABAMENTO', 'ESCORE RUMINAL' ],
+                        ...rows
+                    ]
+                },
+                layout: 'noBorders',
+                margin
             },
-            {
-                columns: [
-                    renderSeqTable('DIF', report, 'dif', ['MOTIVO', 'DESTINO']),
-                    renderSeqTable('HEMATOMA', report, 'bruises', ['LOCAL', 'ORIGEM']),
-                ],
-                columnGap: 10
-            }
-        ],
-        colSpan: 4,
-    }
+            { text: `PESO DE VACINA: ${formatNumber(report.vaccineWeight / 100)} KG/CBÇ`, margin },
+            renderDif(report, margin),
+            renderBruises(report)
+        ]
+    })
 }

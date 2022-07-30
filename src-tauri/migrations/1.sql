@@ -69,6 +69,7 @@ CREATE TABLE reports (
     `numberOfAnimals` INTEGER NOT NULL,
     `sequential` TEXT NOT NULL,
     `sex` TEXT NOT NULL,
+    `awards` TEXT,
     `vaccineWeight` INTEGER NOT NULL,
     `date` TEXT NOT NULL,
     `createdAt` DATETIME DEFAULT CURRENT_TIMESTAMP,

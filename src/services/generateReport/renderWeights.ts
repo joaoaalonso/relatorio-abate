@@ -39,7 +39,7 @@ export default function (report: Report) {
                     renderProperty('Peso de carcaça', `${formatNumber(PC)}KG`)
                 ],
                 [
-                    renderProperty('Premiações', ''),
+                    renderProperty('Premiações', report.awards || ''),
                     renderProperty('Rendimento de carcaça', `${formatNumber(RC, 1)}%`)
                 ]
             ]

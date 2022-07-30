@@ -43,6 +43,7 @@ export interface Report {
     corralEvaluation: string
     comments?: string
     penalties?: string
+    awards?: string
     photos?: string[]
     maturity?: ObjectTypeValue[]
     finishing?: ObjectTypeValue[]
@@ -117,9 +118,9 @@ export const createReport = async (data: Report): Promise<number> => {
 
     const result = await instance.execute(`
         INSERT INTO reports
-        (clientId, ranchId, slaughterhouseId, slaughterhouseUnitId, PC, PV, arroba, batch, breed, cattleShed, comments, penalties, corralEvaluation, numberOfAnimals, sequential, sex, vaccineWeight, date)
+        (clientId, ranchId, slaughterhouseId, slaughterhouseUnitId, PC, PV, arroba, batch, breed, cattleShed, comments, penalties, awards, corralEvaluation, numberOfAnimals, sequential, sex, vaccineWeight, date)
         VALUES
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
     `, [
         data.clientId,
         data.ranchId,
@@ -133,6 +134,7 @@ export const createReport = async (data: Report): Promise<number> => {
         data.cattleShed,
         data.comments,
         data.penalties,
+        data.awards,
         data.corralEvaluation,
         data.numberOfAnimals,
         data.sequential,
@@ -175,13 +177,14 @@ export const updateReport = async (reportId: number, data: Report): Promise<numb
         cattleShed = $10,
         comments = $11,
         penalties = $12,
-        corralEvaluation = $13,
-        numberOfAnimals = $14,
-        sequential = $15,
-        sex = $16,
-        vaccineWeight = $17,
-        date = $18
-        WHERE id = $19
+        awards = $13,
+        corralEvaluation = $14,
+        numberOfAnimals = $15,
+        sequential = $16,
+        sex = $17,
+        vaccineWeight = $18,
+        date = $19
+        WHERE id = $20
     `, [
         data.clientId,
         data.ranchId,
@@ -195,6 +198,7 @@ export const updateReport = async (reportId: number, data: Report): Promise<numb
         data.cattleShed,
         data.comments,
         data.penalties,
+        data.awards,
         data.corralEvaluation,
         data.numberOfAnimals,
         data.sequential,

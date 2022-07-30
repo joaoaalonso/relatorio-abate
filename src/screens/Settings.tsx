@@ -81,7 +81,6 @@ function Settings() {
                                 <tr>
                                     <th>Tamanho</th>
                                     <th>Peso (Kg)</th>
-                                    <th>Idade</th>
                                 </tr>
                             </thead>
                             <tbody>

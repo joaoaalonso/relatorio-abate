@@ -21,9 +21,7 @@ export default async function (report: Report) {
     const G = +(report.fetus.find(fetus => fetus.type === 'G')?.value || 0)
 
     if (!P && !M && !G) {
-        return renderSection('Fêmeas prenhas', {
-            text: 'NENHUM FETO', alignment: 'center'
-        })
+        return renderSection('Fêmeas prenhas', { text: 'NENHUM FETO' })
     }
 
     const PV = report.PV / 100

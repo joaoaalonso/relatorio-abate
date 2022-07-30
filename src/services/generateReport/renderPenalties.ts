@@ -2,7 +2,7 @@ import { Report } from '../report'
 import renderSection from './renderSection'
 
 export default function (report: Report) {
-    if (!report.penalties) return null
+    const text = report.penalties || 'Nenhuma penalização'
 
-    return renderSection('Penalizações', { text: report.penalties.toUpperCase() })
+    return renderSection('Penalizações', { text: text.toUpperCase() })
 }

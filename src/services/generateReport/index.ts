@@ -21,6 +21,7 @@ import {
     getRumenScore
 } from '../report'
 import renderPenalties from './renderPenalties'
+import renderEvaluation from './renderEvaluation'
 
 export default async function(reportId: number, path: string): Promise<boolean> {
     const report = await getReportById(reportId)
@@ -38,6 +39,7 @@ export default async function(reportId: number, path: string): Promise<boolean> 
         renderInfo,
         renderCorralEvaluation,
         renderWeights,
+        renderEvaluation,
         renderPenalties,
         renderFetus,
         renderComments,

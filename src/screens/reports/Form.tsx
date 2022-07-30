@@ -240,6 +240,7 @@ function ReportForm() {
             corralEvaluation: data.corralEvaluation,
             comments: data.comments,
             penalties: data.penalties,
+            awards: data.awards,
             photos,
             maturity,
             finishing,
@@ -467,8 +468,9 @@ function ReportForm() {
                     <div className='row'>
                         <div className='column'>
                             <TextField label='Avaliação do curral' name='corralEvaluation' type='textarea' register={register} errors={errors} required />
-                            <TextField label='Observações' name='comments' type='textarea' register={register} errors={errors} />
+                            <TextField label='Premiações' name='awards' register={register} errors={errors} />
                             <TextField label='Penalizações' name='penalties' type='textarea' register={register} errors={errors} />
+                            <TextField label='Observações' name='comments' type='textarea' register={register} errors={errors} />
                         </div>
                     </div>
 
