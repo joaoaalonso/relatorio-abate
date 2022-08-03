@@ -5,7 +5,7 @@ import { ObjectTypeValue, Report } from '../report'
 const formatRow = (data: ObjectTypeValue[], report: Report, sufix: string = '') => {
     return data.map(d => {
         if (d.value == '0') return null
-        const percentil = (+d.value / report.numberOfAnimals) * 100
+        const percentil = formatNumber((+d.value / report.numberOfAnimals) * 100, 0)
         return `${d.type}${sufix} - ${percentil}%`
     }).filter(Boolean)
 }
