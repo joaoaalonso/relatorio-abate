@@ -1,3 +1,4 @@
+import { ARROBA } from '../settings'
 import formatNumber from './formatNumber'
 import renderSection from './renderSection'
 import { ObjectTypeValue, Report } from '../report'
@@ -39,6 +40,13 @@ const renderBruises = (report: Report) => {
     }
 }
 
+const renderVaccinePrice = (report: Report) => {
+    if (!report.arroba) return ''
+    const vaccineWeight = report.vaccineWeight / 100
+    const vaccinePrice = (report.arroba / 100) / ARROBA * vaccineWeight
+    return `R$ ${formatNumber(vaccinePrice)}/CBÇ`
+}
+
 export default function (report: Report) {
     const margin = [0, 0, 0, 4]
 
@@ -56,6 +64,9 @@ export default function (report: Report) {
         rows.push(row)
     }
 
+    const vaccineWeight = report.vaccineWeight / 100
+    const vaccinePrice = (report.arroba || 0) / 15 * vaccineWeight
+
     return renderSection('Avaliação de abate', {
         stack: [
             {
@@ -63,13 +74,13 @@ export default function (report: Report) {
                     widths: ['*', '*', '*'],
                     body: [
                         [ 'MATURIDADE', 'ACABAMENTO', 'ESCORE RUMINAL' ],
-                        ...rows
+                        ...rows,
+                        [`PESO DE VACINA: ${formatNumber(vaccineWeight)} KG/CBÇ`, renderVaccinePrice(report), '']
                     ]
                 },
                 layout: 'noBorders',
                 margin
             },
-            { text: `PESO DE VACINA: ${formatNumber(report.vaccineWeight / 100)} KG/CBÇ`, margin },
             renderDif(report, margin),
             renderBruises(report)
         ]
